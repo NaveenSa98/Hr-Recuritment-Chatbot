@@ -1,0 +1,58 @@
+version: "3.1"
+
+rules:
+
+- rule: Respond to greetings immediately
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Provide company culture info
+  steps:
+  - intent: ask_company_culture
+  - action: utter_company_culture
+
+- rule: List benefits directly
+  steps:
+  - intent: ask_benefits
+  - action: utter_benefits
+
+# Status Checks
+- rule: Provide status when ID exists
+  condition:
+    - slot_was_set:
+        - application_id
+  steps:
+  - intent: ask_application_status
+  - action: action_check_status
+
+- rule: Request ID for status check
+  condition:
+    - slot_was_set:
+        - application_id: null
+  steps:
+  - intent: ask_application_status
+  - action: utter_ask_application_id
+
+  
+
+# Withdrawal Process
+- rule: Process withdrawal with ID
+  condition:
+    - slot_was_set:
+        - application_id
+  steps:
+  - intent: withdraw_application
+  - action: action_withdraw_application
+  - slot_was_set:
+      - application_stage: "withdrawn"
+
+- rule: Request ID for withdrawal
+  condition:
+    - slot_was_set:
+        - application_id: null
+  steps:
+  - intent: withdraw_application
+  - action: utter_ask_application_id
+
+

@@ -1,0 +1,163 @@
+version: "3.1"
+
+stories:
+
+# Basic Interaction Flow
+- story: greet and explore
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_company_culture
+  - action: utter_company_culture
+  - intent: ask_benefits
+  - action: utter_benefits
+  - intent: ask_job_openings
+  - action: action_fetch_jobs
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Complete Job Application Journey
+- story: full_application_process
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_job_openings
+  - action: action_fetch_jobs
+  - intent: ask_job_requirements
+    entities:
+      - job_title: "Software Engineer"
+  - action: utter_job_requirements
+  - intent: confirm_application
+  - action: action_start_application
+  - intent: upload_resume
+  - action: utter_upload_resume
+  - action: action_store_resume
+  - slot_was_set:
+    - resume_uploaded: true
+  - action: action_update_application_stage
+  - slot_was_set:
+    - application_stage: "resume_uploaded"
+  - intent: ask_recruitment_process
+  - action: utter_recruitment_process
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Application Status Check
+- story: check_application_status
+  steps:
+  - intent: ask_application_status
+  - action: utter_ask_application_id
+  - intent: affirm
+    entities:
+      - application_id: "APP12345"
+  - action: action_check_status
+  - intent: ask_interview_scheduling
+    entities:
+      - date: "2023-12-15"
+  - action: action_schedule_interview
+  - slot_was_set:
+    - interview_date: "2023-12-15"
+    - application_stage: "interview_scheduled"
+
+# Interview Scheduling Flow
+- story: schedule_interview
+  steps:
+  - intent: ask_interview_scheduling
+  - action: utter_interview_scheduling
+  - intent: affirm
+    entities:
+      - date: "tomorrow"
+      - time: "14:00"
+  - action: action_schedule_interview
+  - slot_was_set:
+    - interview_date: "2023-12-15"
+    - interview_time: "14:00"
+  - action: utter_confirm_interview
+
+# Technical Support Scenario
+- story: handle_technical_issue
+  steps:
+  - intent: technical_support
+  - action: utter_technical_support
+  - intent: affirm
+    entities:
+      - application_id: "APP12345"
+  - action: action_escalate_technical_issue
+ 
+
+# Withdrawal Process
+- story: application_withdrawal
+  steps:
+  - intent: withdraw_application
+  - action: utter_ask_application_id
+  - intent: affirm
+    entities:
+      - application_id: "APP12345"
+  - action: action_withdraw_application
+  - slot_was_set:
+    - application_stage: "withdrawn"
+  - action: utter_withdraw_application
+
+# Happy Path - Quick Application
+- story: quick_apply_happy_path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_job_openings
+  - action: action_fetch_jobs
+  - intent: confirm_application
+    entities:
+      - job_title: "Marketing Specialist"
+  - action: action_start_application
+  - intent: upload_resume
+  - action: action_store_resume
+  - slot_was_set:
+    - resume_uploaded: true
+  - action: action_update_application_stage
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Conditional Flows
+- story: resume_upload_reminder
+  steps:
+  - intent: confirm_application
+  - action: action_start_application
+  - intent: ask_how_to_apply
+  - action: utter_upload_resume
+  - intent: upload_resume
+  - action: action_store_resume
+  - slot_was_set:
+    - resume_uploaded: true
+  - action: action_update_application_stage
+
+# Fallback Story
+- story: fallback_to_human
+  steps:
+  - intent: default
+  - action: utter_default
+  - intent: affirm
+  - action: action_transfer_to_hr
+
+# Multi-Path Story
+- story: culture_to_application_path
+  steps:
+  - intent: ask_company_culture
+  - action: utter_company_culture
+  - intent: ask_job_openings
+  - action: action_fetch_jobs
+  - intent: ask_job_requirements
+    entities:
+      - job_title: "Data Analyst"
+  - action: utter_job_requirements
+  - intent: confirm_application
+  - action: action_start_application
+
+- story: resume_upload_failure
+  steps:
+    - intent: upload_resume
+    - action: utter_upload_resume
+    - intent: technical_support
+      entities:
+        - issue_type: "upload_failed"
+    - action: action_escalate_technical_issue
+

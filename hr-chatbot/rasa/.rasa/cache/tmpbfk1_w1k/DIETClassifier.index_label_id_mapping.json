@@ -1,0 +1,18 @@
+{
+  "0": "affirm",
+  "1": "ask_application_status",
+  "2": "ask_benefits",
+  "3": "ask_company_culture",
+  "4": "ask_how_to_apply",
+  "5": "ask_interview_scheduling",
+  "6": "ask_job_openings",
+  "7": "ask_job_requirements",
+  "8": "ask_recruitment_process",
+  "9": "confirm_application",
+  "10": "default",
+  "11": "goodbye",
+  "12": "greet",
+  "13": "technical_support",
+  "14": "upload_resume",
+  "15": "withdraw_application"
+}

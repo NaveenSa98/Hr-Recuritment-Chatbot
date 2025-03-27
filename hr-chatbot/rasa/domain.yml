@@ -1,0 +1,287 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - ask_company_culture
+  - ask_benefits
+  - ask_job_openings
+  - ask_job_requirements
+  - ask_recruitment_process
+  - ask_how_to_apply
+  - upload_resume
+  - confirm_application
+  - ask_application_status
+  - ask_interview_scheduling
+  - technical_support
+  - withdraw_application
+  - default
+  - out_of_scope
+  - affirm
+
+entities:
+  - name
+  - email
+  - phone_number
+  - job_title
+  - department
+  - date
+  - time
+  - application_id
+  - document_type
+  - issue_type  
+
+slots:
+  candidate_name:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: name
+      - type: from_text
+        intent: 
+          - greet
+          - confirm_application
+
+  candidate_email:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: email
+      - type: from_text
+        intent: 
+          - confirm_application
+
+  candidate_phone:
+    type: text
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: phone_number
+      - type: from_text
+        intent: 
+          - confirm_application
+
+  application_id:
+    type: text
+    initial_value: null
+    mappings:
+      - type: from_entity
+        entity: application_id
+      - type: from_text
+        intent: 
+          - ask_application_status
+          - withdraw_application
+
+  job_title:
+    type: text
+    influence_conversation: true
+    initial_value: null
+    mappings:
+      - type: from_entity
+        entity: job_title
+      - type: from_text
+        intent: 
+          - ask_job_requirements
+          - confirm_application
+
+  department:
+    type: categorical
+    values:
+      - engineering
+      - marketing
+      - hr
+      - operations
+    initial_value: null
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: department
+      - type: from_text
+        intent: 
+          - ask_job_openings
+          - confirm_application
+
+  application_stage:
+    type: categorical
+    values:
+      - not_started
+      - resume_uploaded
+      - form_completed
+      - under_review
+      - interview_scheduled
+      - withdrawn
+    initial_value: not_started
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  resume_uploaded:
+    type: bool
+    initial_value: false
+    influence_conversation: true
+    mappings:
+      - type: from_intent
+        intent: upload_resume
+        value: true
+      - type: custom
+
+  interview_date:
+    type: text
+    initial_value: null
+    mappings:
+      - type: from_entity
+        entity: date
+        intent: ask_interview_scheduling
+      - type: from_text
+        intent: 
+          - ask_interview_scheduling
+
+  interview_time:
+    type: text
+    initial_value: null
+    mappings:
+      - type: from_entity
+        entity: time
+      - type: from_text
+        intent: 
+          - ask_interview_scheduling
+
+  interview_type:
+    type: categorical
+    values:
+      - virtual
+      - onsite
+    initial_value: virtual
+    mappings:
+      - type: from_intent
+        intent: ask_interview_scheduling
+        value: virtual
+      - type: custom
+
+  technical_issue:
+    type: text
+    initial_value: null
+    mappings:
+      - type: from_entity
+        entity: issue_type
+      - type: from_text
+        intent: technical_support
+
+responses:
+  utter_greet:
+    - text: "Hello! Welcome to Faith's career portal. How can I assist you today?"
+    - text: "Hi {candidate_name}! I'm here to help with your job search at Faith. What would you like to know?"
+  
+  utter_goodbye:
+    - text: "Goodbye! Wishing you the best with your application."
+    - text: "Thank you for visiting Faith's career portal. Have a great day!"
+
+  utter_company_culture:
+    - text: "At Faith, we pride ourselves on our collaborative and innovative culture. We value transparency, work-life balance, and continuous learning."
+    - text: "Our {department} team particularly enjoys our culture of trust and empowerment with flexible work arrangements."
+
+  utter_benefits:
+    - text: "We offer comprehensive benefits including health insurance, 401(k) matching, generous PTO, and department-specific perks like {department} team retreats."
+    - text: "For {job_title} positions, we provide [role-specific benefits]. Our standard package includes medical/dental/vision coverage and remote work options."
+
+  utter_job_requirements:
+    - text: "For {job_title} in {department}, we typically look for {requirements}. Would you like me to check if you meet these?"
+    - text: "The {job_title} position requires {requirements}. Let me know if you'd like to discuss your qualifications."
+
+  utter_recruitment_process:
+    - text: "For {job_title}, our process includes: 1) Resume review 2)screening 3) Technical assessment 4) Final interview."
+    - text: "After applying for roles, you'll go through these stages: application review, interviews (2-3 rounds), and reference checks."
+
+  utter_how_to_apply:
+    - text: "To apply for {job_title}: 1) Click 'Apply' 2) Complete the form 3) Upload documents. Your current stage: {application_stage}."
+    - text: "For positions: select the role, fill your details, upload resume (Status: {resume_uploaded}), and submit."
+
+  utter_upload_resume:
+    - text: "Please upload your resume for {job_title} in PDF Current upload status: {resume_uploaded}."
+    - text: "To proceed with your application, we need your resume (Supported formats: PDF)."
+
+  utter_confirm_application:
+    - text: "Ready to apply for {job_title} in {department}? Let's begin with your contact details."
+    - text: "Starting your application for {job_title}. First, I'll need your {required_fields}."
+
+  utter_application_status:
+    - text: "Application {application_id} for {job_title} is currently: {application_stage}. Next step: {next_step}."
+    - text: "Status update: Your {department} application is at '{application_stage}' stage. Expect updates within {timeline}."
+
+  utter_interview_scheduling:
+    - text: "For your {job_title} interview, we have these {interview_type} slots: {slots}. Preferred date: {interview_date}?"
+    - text: "Scheduling {department} interview. Available {interview_type} times: {slots}. Your selected: {interview_date} at {interview_time}."
+
+  utter_technical_support:
+    - text: "I've logged this issue for application {application_id}. Our tech team will contact you at {candidate_email}."
+    - text: "Technical issue detected. We've notified support and will update {candidate_name} at {candidate_phone}."
+
+  utter_withdraw_application:
+    - text: "Application {application_id} for {job_title} has been withdrawn. Contact {candidate_email} if this was unintended."
+    - text: "We've processed withdrawal for {candidate_name}'s {department} application. You may reapply anytime."
+
+  utter_ask_name:
+    - text: "May I have your full name for the application?"
+    - text: "What name should we use for your candidate profile?"
+
+  utter_ask_email:
+    - text: "Please provide your email address for application updates."
+    - text: "What's the best email to contact you about your application?"
+
+  utter_ask_phone:
+    - text: "Could you share your phone number for interview scheduling?"
+    - text: "We'll need a contact number for next steps. What's your phone number?"
+
+  utter_ask_application_id:
+    - text: "Could you please provide your application ID?"
+    - text: "I'll need your application ID to look up your information. What is it?"
+  
+  utter_confirm_interview:
+    - text: "Your interview has been scheduled for {interview_date} at {interview_time}. A confirmation has been sent to {candidate_email}."
+    - text: "Interview confirmed! You'll receive details about your {interview_type} interview on {interview_date} at {interview_time}."
+
+  utter_default:
+    - text: "Do you need to contact HR department for this? I can transfer you to the HR team."
+    - text: "Call the HR team at 1-800-HR-HELP for further assistance."
+
+actions:
+  - action_fetch_jobs
+  - action_store_resume
+  - action_start_application
+  - action_check_requirements
+  - action_check_status
+  - action_schedule_interview
+  - action_withdraw_application
+  - action_escalate_technical_issue
+  - action_save_candidate_info
+  - action_update_application_stage
+  - action_transfer_to_hr
+  - utter_confirm_interview
+
+forms:
+  candidate_info_form:
+    required_slots:
+      - candidate_name
+      - candidate_email
+      - candidate_phone
+
+  job_application_form:
+    required_slots:
+      - job_title
+      - department
+      - resume_uploaded
+
+  interview_scheduling_form:
+    required_slots:
+      - interview_date
+      - interview_time
+      - interview_type
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
