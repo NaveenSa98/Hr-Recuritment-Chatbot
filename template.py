@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
 
-project_name = 'hr-chatbot'
+project_name = 'hr_chatbot'
 
 list_of_files = [
     f"{project_name}/rasa/actions/__init__.py",
@@ -31,7 +31,8 @@ list_of_files = [
     f"{project_name}/docker-compose.yml",
 
     f"{project_name}/README.md",
-    f"{project_name}requirements.txt",
+    f"{project_name}/requirements.txt",
+    f"{project_name}/.env",
 ]
 
 for file in list_of_files:

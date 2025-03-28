@@ -143,6 +143,7 @@ nlu:
     - What internships are available?
     - Are there any product roles?
     - Is the [job title] position open?
+    - is [department] hiring?
     - What's the latest job posting?
     - Can I see all vacancies?
     - Current job vacancies

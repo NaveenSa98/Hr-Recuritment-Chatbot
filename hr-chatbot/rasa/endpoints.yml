@@ -10,8 +10,8 @@
 # Server which runs your custom actions.
 # https://rasa.com/docs/rasa/custom-actions
 
-#action_endpoint:
-#  url: "http://localhost:5055/webhook"
+action_endpoint:
+ url: "http://localhost:5055/webhook"
 
 # Tracker store which is used to store the conversations.
 # By default the conversations are stored in memory.
@@ -26,11 +26,12 @@
 #    use_ssl: <whether or not the communication is encrypted, default false>
 
 #tracker_store:
-#    type: mongod
-#    url: <url to your mongo instance, e.g. mongodb://localhost:27017>
-#    db: <name of the db within your mongo instance, e.g. rasa>
-#    username: <username used for authentication>
-#    password: <password used for authentication>
+#    type: sql
+#    dialect: "postgresql"  # the dialect used to interact with the db
+#    url: ${DB_HOST}  # (optional) host of the sql db, e.g. "localhost"
+#    db: ${DB_NAME}  # path to your db
+#    username: ${DB_USER}  # username used for authentication
+#    password: ${DB_PASSWORD}  # password used for authentication
 
 # Event broker which all conversation events should be streamed to.
 # https://rasa.com/docs/rasa/event-brokers
