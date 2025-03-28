@@ -1,0 +1,40 @@
+{
+  "lookup": {
+    "rules": {
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"ask_application_status\"}}]": "utter_ask_application_id",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"ask_application_status\"}}, {\"prev_action\": {\"action_name\": \"utter_ask_application_id\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"ask_application_status\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"withdraw_application\"}}]": "action_withdraw_application",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"withdraw_application\"}}, {\"prev_action\": {\"action_name\": \"action_withdraw_application\"}, \"slots\": {\"application_id\": [1.0], \"application_stage\": [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]}, \"user\": {\"intent\": \"withdraw_application\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"withdraw_application\"}}]": "utter_ask_application_id",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"withdraw_application\"}}, {\"prev_action\": {\"action_name\": \"utter_ask_application_id\"}, \"slots\": {\"application_id\": \"should_not_be_set\"}, \"user\": {\"intent\": \"withdraw_application\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"ask_benefits\"}}]": "utter_benefits",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"ask_benefits\"}}, {\"prev_action\": {\"action_name\": \"utter_benefits\"}, \"user\": {\"intent\": \"ask_benefits\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}]": "action_check_status",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}, {\"prev_action\": {\"action_name\": \"action_check_status\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"greet\"}}]": "utter_greet",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"greet\"}}, {\"prev_action\": {\"action_name\": \"utter_greet\"}, \"user\": {\"intent\": \"greet\"}}]": "action_listen",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"ask_company_culture\"}}]": "utter_company_culture",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"user\": {\"intent\": \"ask_company_culture\"}}, {\"prev_action\": {\"action_name\": \"utter_company_culture\"}, \"user\": {\"intent\": \"ask_company_culture\"}}]": "action_listen"
+    },
+    "rule_only_slots": [
+      "application_id"
+    ],
+    "rule_only_loops": [],
+    "rules_for_loop_unhappy_path": {},
+    "rules_not_in_stories": [
+      "predicting default action with intent restart",
+      "predicting default action with intent session_start",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}]",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}, {\"prev_action\": {\"action_name\": \"action_check_status\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"ask_application_status\"}}]",
+      "handling active loops and forms - job_application_form",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"withdraw_application\"}}, {\"prev_action\": {\"action_name\": \"action_withdraw_application\"}, \"slots\": {\"application_id\": [1.0], \"application_stage\": [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]}, \"user\": {\"intent\": \"withdraw_application\"}}]",
+      "predicting default action with intent back",
+      "[{\"prev_action\": {\"action_name\": \"action_listen\"}, \"slots\": {\"application_id\": [1.0]}, \"user\": {\"intent\": \"withdraw_application\"}}]",
+      "handling active loops and forms - candidate_info_form",
+      "handling active loops and forms - interview_scheduling_form",
+      "handling active loops and forms - job_application_form - action_listen",
+      "handling active loops and forms - interview_scheduling_form - action_listen",
+      "handling active loops and forms - candidate_info_form - action_listen"
+    ]
+  }
+}

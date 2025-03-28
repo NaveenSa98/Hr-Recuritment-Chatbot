@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 def connect_to_db():

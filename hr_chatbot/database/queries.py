@@ -1,12 +1,34 @@
 import os
+import sys
 import psycopg2
-from psycopg2 import sql
-from datetime import datetime
-import random
-import string
-from init_db import connect_to_db
+from dotenv import load_dotenv
 
+# Determine the project root directory
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
+# Load environment variables
+load_dotenv()
+
+def connect_to_db():
+    """
+    Establish a connection to the PostgreSQL database.
+    
+    Returns:
+    - psycopg2 connection object or None if connection fails
+    """
+    try:
+        conn = psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+        )
+        return conn
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return None
 
 def get_all_jobs_openings(active_only=True):
     """Fetch all jobs, optionally filtering for active jobs only"""
@@ -23,7 +45,6 @@ def get_all_jobs_openings(active_only=True):
         
         cursor.execute(query)
         titles = [row[0] for row in cursor.fetchall()] 
-        
     
         formatted_output = "\n".join(f"- {title}" for title in titles)
         
@@ -36,7 +57,6 @@ def get_all_jobs_openings(active_only=True):
             cursor.close()
             conn.close()
 
-
 def get_jobs_by_department(department, active_only=True):
     """Fetch jobs filtered by department and return formatted details for chatbot"""
     conn = connect_to_db()
@@ -48,7 +68,7 @@ def get_jobs_by_department(department, active_only=True):
         query = """
             SELECT title, department, description, requirements, salary_range, 
                    benefits, location, job_type 
-            FROM jobs WHERE department = %s
+            FROM jobs WHERE LOWER(department) = LOWER(%s)
         """
         if active_only:
             query += " AND status = 'OPEN'"
@@ -57,18 +77,17 @@ def get_jobs_by_department(department, active_only=True):
         cursor.execute(query, (department,))
         jobs = cursor.fetchall()
         
-      
         job_details = []
         for job in jobs:
             formatted_job = f"""
-Title: {job[1]}
-Department: {job[2]}
-Description: {job[3]}
-Requirements: {job[4]}
-Salary Range: {job[5]}
-Benefits: {job[6]}
-Location: {job[7]}
-Job Type: {job[8]}
+Title: {job[0]}
+Department: {job[1]}
+Description: {job[2]}
+Requirements: {job[3]}
+Salary Range: {job[4]}
+Benefits: {job[5]}
+Location: {job[6]}
+Job Type: {job[7]}
 """
             job_details.append(formatted_job.strip())
         
@@ -77,52 +96,6 @@ Job Type: {job[8]}
     except Exception as e:
         print(f"Error fetching jobs by department: {e}")
         return ""
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
-
-
-def get_job_by_title(title, active_only=True):
-    """Fetch job by title"""
-    conn = connect_to_db()
-    if not conn:
-        return None
-    
-    try:
-        cursor = conn.cursor()
-        query = """SELECT title, department, description, requirements, salary_range, 
-                          benefits, location, job_type 
-                FROM jobs WHERE title ILIKE %s"""
-        if active_only:
-            query += " AND status = 'OPEN'" 
-        query += " ORDER BY created_at DESC LIMIT 1"
-        
-        cursor.execute(query, (f"%{title}%",))
-        job = cursor.fetchone()
-        
-        if not job:
-            return None
-            
-       
-        job_details = []
-        for job in job:
-            formatted_job = f"""
-Title: {job[1]}
-Department: {job[2]}
-Description: {job[3]}
-Requirements: {job[4]}
-Salary Range: {job[5]}
-Benefits: {job[6]}
-Location: {job[7]}
-Job Type: {job[8]}
-"""
-            job_details.append(formatted_job.strip())
-        
-        return "\n\n".join(job_details)
-    except Exception as e:
-        print(f"Error fetching job by title: {e}")
-        return None
     finally:
         if conn:
             cursor.close()
@@ -137,7 +110,7 @@ def get_job_requirements(title):
     try:
         cursor = conn.cursor()
         query = """
-            SELECT title, requirements, department, location 
+            SELECT title, requirements,location,description, salary_range,benefits  
             FROM jobs 
             WHERE title ILIKE %s 
             AND status = 'OPEN'
@@ -155,8 +128,10 @@ def get_job_requirements(title):
         return {
             'title': job[0],
             'requirements': job[1],
-            'department': job[2],
-            'location': job[3]
+            'location': job[2],
+            'description': job[3],
+            'salary_range': job[4],
+            'benefits': job[5]
         }
         
     except Exception as e:
@@ -166,98 +141,3 @@ def get_job_requirements(title):
         if conn:
             cursor.close()
             conn.close()
-
-
-def get_job_benefits(title):
-    """Fetch ONLY job benefits by job title (case-insensitive search)"""
-    conn = connect_to_db()
-    if not conn:
-        return None
-    
-    try:
-        with conn.cursor() as cursor:
-            query = """
-                SELECT benefits 
-                FROM jobs 
-                WHERE title ILIKE %s 
-                AND status = 'OPEN'
-                ORDER BY created_at DESC 
-                LIMIT 1
-            """
-            cursor.execute(query, (f"%{title}%",))
-            result = cursor.fetchone()
-            
-            return result[0] if result else None
-            
-    except Exception as e:
-        print(f"Error fetching job benefits: {e}")
-        return None
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
-
-
-def create_or_update_candidate(name, email, phone=None, resume_data=None, resume_filename=None):
-    """Create a new candidate or update if email exists"""
-    conn = connect_to_db()
-    if not conn:
-        return None
-    
-    try:
-        cursor = conn.cursor()
-        
-        # Check if candidate exists
-        cursor.execute("SELECT candidate_id FROM candidates WHERE email = %s", (email,))
-        existing = cursor.fetchone()
-        
-        if existing:
-            # Update existing candidate
-            if resume_data:
-                cursor.execute(
-                    """
-                    UPDATE candidates 
-                    SET name = %s, phone = %s, resume_data = %s, resume_filename = %s, resume_uploaded_at = CURRENT_TIMESTAMP 
-                    WHERE email = %s RETURNING candidate_id
-                    """,
-                    (name, phone, psycopg2.Binary(resume_data), resume_filename, email)
-                )
-            else:
-                cursor.execute(
-                    "UPDATE candidates SET name = %s, phone = %s WHERE email = %s RETURNING candidate_id",
-                    (name, phone, email)
-                )
-            candidate_id = cursor.fetchone()[0]
-        else:
-            # Create new candidate
-            if resume_data:
-                cursor.execute(
-                    """
-                    INSERT INTO candidates 
-                    (name, email, phone, resume_data, resume_filename, resume_uploaded_at) 
-                    VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP) 
-                    RETURNING candidate_id
-                    """,
-                    (name, email, phone, psycopg2.Binary(resume_data), resume_filename)
-                )
-            else:
-                cursor.execute(
-                    "INSERT INTO candidates (name, email, phone) VALUES (%s, %s, %s) RETURNING candidate_id",
-                    (name, email, phone)
-                )
-            candidate_id = cursor.fetchone()[0]
-        
-        conn.commit()
-        return candidate_id
-    except Exception as e:
-        conn.rollback()
-        print(f"Error creating/updating candidate: {e}")
-        return None
-    finally:
-        if conn:
-            cursor.close()
-            conn.close()
-
-
-
-    

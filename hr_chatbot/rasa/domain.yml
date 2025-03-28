@@ -106,6 +106,7 @@ slots:
         intent: 
           - ask_job_openings
           - confirm_application
+          - ask_job_requirements
 
   application_stage:
     type: categorical

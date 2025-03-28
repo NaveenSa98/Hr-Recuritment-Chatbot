@@ -28,7 +28,8 @@ stories:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
-  - action: utter_job_requirements
+  # - action: utter_job_requirements
+  - action: action_check_requirements
   - intent: confirm_application
   - action: utter_confirm_application
   - intent: upload_resume
@@ -112,6 +113,7 @@ stories:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
-  - action: utter_job_requirements
+  # - action: utter_job_requirements
+  - action: action_check_requirements
   - intent: ask_recruitment_process
   - action: utter_recruitment_process
