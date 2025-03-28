@@ -2,7 +2,6 @@ import os
 import sys
 from rasa_sdk.events import SlotSet
 
-# Add the project root directory to Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
 
@@ -11,7 +10,6 @@ from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 
-# Import directly from the database module
 from database.queries import (
     get_all_jobs_openings, 
     get_jobs_by_department, 
@@ -60,8 +58,6 @@ class ActionFetchJobs(Action):
         
         return []
 
-
-# Add any additional custom actions here
 class ActionCheckJobRequirements(Action):
     def name(self) -> Text:
         return "action_check_requirements"
