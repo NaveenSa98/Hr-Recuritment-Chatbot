@@ -43,6 +43,10 @@ nlu:
     - thank you
     - hola
     - appriciate
+    - great
+    - fine
+    - confirm
+    - proceed
 
 - intent: ask_company_culture
   examples: |
@@ -71,6 +75,14 @@ nlu:
     - Are teams cross-functional?
     - How often do teams socialize?
     - Do you have team-building activities?
+    - Company values
+    - Workplace environment
+    - Team dynamics
+    - Work atmosphere
+    - Company philosophy
+    - What makes your company unique?
+    - Cultural attributes
+    - Employee experience
 
 - intent: ask_benefits  
   examples: |  
@@ -99,6 +111,12 @@ nlu:
     - Do you have unlimited PTO?  
     - Are there company retreats?  
     - What's the HSA contribution?  
+    - Retirement plans
+    - Work benefits
+    - What's included in compensation?
+    - Additional job benefits
+    - Salary and benefits
+    - What do employees get?
 
 - intent: ask_job_openings
   examples: |
@@ -127,6 +145,12 @@ nlu:
     - Is the [job title] position open?
     - What's the latest job posting?
     - Can I see all vacancies?
+    - Current job vacancies
+    - I'm looking for a job
+    - Any open positions?
+    - What opportunities do you have?
+    - Hiring right now?
+    - Job openings?
 
 - intent: ask_job_requirements  
   examples: |  
@@ -155,56 +179,85 @@ nlu:
     - Are there any age restrictions?  
     - Will you consider self-taught candidates?  
     - Are there security clearance needs?  
+    - Qualifications for the position
+    - What do I need to apply?
+    - Experience requirements
+    - Skill set for the job
+    - What makes a good candidate?
+    - Minimum requirements
+    - Preferred skills
 
 - intent: ask_recruitment_process
   examples: |
     - How does the hiring process work?
-    - What's the application process?
+    - hiring process
+    - How to get hired
+    - recruitment steps
+    - recruitment workflow
+    - application steps
+    - hiring workflow
+    - hiring procedure
+    - process to get hired
+    - how are candidates selected
+    - selection process
+    - interview process
+    - hiring timeline
+    - steps to get hired
+    - recruitment stages
+    - how does recruitment work
+    - what's the hiring method
+    - how are applications reviewed
+    - hiring steps
+    - selection method
+    - How does the hiring process work
+    - What's the application process
     - Steps to apply for a job
-    - How do I get hired at Faith?
+    - How do I get hired at Faith
     - Walk me through your recruitment
-    - What's your hiring workflow?
-    - How long does hiring take?
-    - What are the interview stages?
-    - How many rounds of interviews?
-    - Is there a technical round?
-    - Do you do background checks?
-    - What assessments are involved?
-    - How do you evaluate candidates?
-    - What happens after I apply?
-    - When will I hear back after applying?
-    - Who reviews applications?
-    - Do you do phone screens?
-    - Is there an HR round?
-    - What's the timeline from apply to offer?
-    - How soon can I start after applying?
-    - Can I track my application status?
-    - Do you give feedback to candidates?
-    - What documents are required?
-    - How do you make hiring decisions?
-    - What makes a candidate successful?
+    - What's your hiring workflow
+    - How long does hiring take
+    - What are the interview stages
+    - How many rounds of interviews
+    - Is there a technical round
+    - Do you do background checks
+    - What assessments are involved
+    - How do you evaluate candidates
+    - What happens after I apply
+    - When will I hear back after applying
+    - Who reviews applications
+    - Do you do phone screens
+    - Is there an HR round
+
 
 - intent: ask_how_to_apply
   examples: |
-      - How do I submit my application
-      - What is the application process
-      - Can you guide me through applying
-      - Tell me how to apply for a job
-      - What steps do I need to take
-      - How can I submit my resume
-      - What is the application procedure
-      - Can you explain how to apply
-      - What do I need to do to apply
-      - Guide me through the application
-      - How do I start my application
-      - What is required to apply
-      - Can you help me apply
-      - Explain the application method
-      - What are the application steps
-      - How do I begin the application process
-      - Tell me about applying online
-      - What should I prepare to apply
-
+    - How to apply for job 
+    - application method
+    - how do I apply
+    - steps to apply
+    - apply process
+    - job application steps
+    - how can I apply
+    - way to apply
+    - application procedure
+    - submit application
+    - apply for position
+    - How do I submit my application
+    - What is the application process
+    - Can you guide me through applying
+    - Tell me how to apply for a job
+    - What steps do I need to take
+    - How can I submit my resume
+    - What is the application procedure
+    - Can you explain how to apply
+    - What do I need to do to apply
+    - Guide me through the application
+    - How do I start my application
+    - What is required to apply
+    - Can you help me apply
+    - Explain the application method
+    - What are the application steps
+    
 - intent: upload_resume
   examples: |
       - How do I upload my resume
@@ -238,6 +291,7 @@ nlu:
       - I'd like to apply now
       - Show me the application
       - Yes, continue
+      - I'm interested in this role
 
 - intent: ask_application_status
   examples: |

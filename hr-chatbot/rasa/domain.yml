@@ -27,6 +27,7 @@ entities:
   - department
   - date
   - time
+  - inter_type
   - application_id
   - document_type
   - issue_type  
@@ -158,10 +159,12 @@ slots:
       - onsite
     initial_value: virtual
     mappings:
-      - type: from_intent
-        intent: ask_interview_scheduling
-        value: virtual
-      - type: custom
+      - type: from_entity
+        entity: inter_type
+      - type: from_text
+        intent: 
+          - ask_interview_scheduling
+
 
   technical_issue:
     type: text
@@ -174,80 +177,89 @@ slots:
 
 responses:
   utter_greet:
-    - text: "Hello! Welcome to Faith's career portal. How can I assist you today?"
-    - text: "Hi {candidate_name}! I'm here to help with your job search at Faith. What would you like to know?"
-  
+    - text: "Hello! 👋 Welcome to Faite's career portal. How can I help you with your job search today?"
+    - text: "Hi there! I'm your AI career assistant at Faith. What can I do for you?"
+    - text: "Greetings! Ready to explore exciting career opportunities at Faite?"
+
   utter_goodbye:
-    - text: "Goodbye! Wishing you the best with your application."
-    - text: "Thank you for visiting Faith's career portal. Have a great day!"
+    - text: "Thank you for visiting Faite's career portal. Wishing you the best in your job search! 🍀"
+    - text: "Goodbye! Feel free to return if you have any more questions about careers at Faite."
+    - text: "Take care! We hope to see you again soon in your career journey."
+
+  utter_default:
+    - text: "I'm not quite sure I understand. Could you rephrase that or contact our HR team at hr@faite.com or Call 011-xxxx?"
+    - text: "I'm afraid I couldn't process your request. Would you like to speak with a human recruiter?"
+    - text: "I'm having trouble understanding your request. Can you be more specific?"
 
   utter_company_culture:
-    - text: "At Faith, we pride ourselves on our collaborative and innovative culture. We value transparency, work-life balance, and continuous learning."
-    - text: "Our {department} team particularly enjoys our culture of trust and empowerment with flexible work arrangements."
+     - text: "At Faith, we've built a culture that blends innovation with genuine care for our team. Here's what makes us unique:\n\n✨ **Our Core Values**:\n- **Collaboration First**: Cross-functional teamwork is in our DNA\n- **Continuous Learning**: $5,000 annual education stipend\n- **Work-Life Harmony**: Flexible hours and remote options\n- **Transparent Leadership**: Monthly AMA sessions with executives\n\n🌱 **Growth Opportunities**:\n- Mentorship programs pairing juniors with VPs\n- Quarterly \"Innovation Days\" to work on passion projects\n- Clear promotion paths with bi-annual reviews\n\n🏆 **Recognition**:\n- Peer-nominated awards with cash bonuses\n- Annual company-wide retreat to celebrate wins\n- \"Thank You\" Thursdays for team shoutouts"
+     - text: "Faith's culture is best described as 'ambitious yet human' - we drive results while valuing each team member.\n\n**Day-to-Day Environment**:\n- Open office layout with focus pods\n- Casual dress code (be yourself!)\n- Pet-friendly workplaces\n- Monthly team outings (from escape rooms to volunteering)\n\n**Inclusion & Diversity**:\n- 8 Employee Resource Groups (Women in Tech, Pride Alliance, etc.)\n- Unconscious bias training for all hiring managers\n- Multilingual workplace with 14 languages spoken\n\n**Leadership Philosophy**:\n- 'Servant leadership' model\n- 360-degree feedback for all managers\n- Open-door policy at all levels"
 
   utter_benefits:
-    - text: "We offer comprehensive benefits including health insurance, 401(k) matching, generous PTO, and department-specific perks like {department} team retreats."
-    - text: "For {job_title} positions, we provide [role-specific benefits]. Our standard package includes medical/dental/vision coverage and remote work options."
+    - text: "Our 'Whole You' benefits package supports every aspect of your life:\n\n💼 **Career Growth**:\n- $/year tuition reimbursement\n- Conference attendance (Domestic + International)\n- Promotion-based stock grants\n\n🏥 **Health & Wellness**:\n- Premium medical/dental/vision (90% company-paid)\n- Mental health coverage (20 therapy sessions/year)\n- Onsite gyms + $500 fitness reimbursement\n- Nutritionist consultations\n\n🏖 **Time Off**:\n- Unlimited PTO (with 15-day minimum usage)\n- 16 weeks parental leave (gender-neutral)\n- 4-week paid sabbatical every 5 years\n\n💰 **Financial**:\n- 401(k) with 6% company match\n- Student loan repayment ($200/month)\n- Financial planning services\n- Performance bonuses (up to 20% of salary)\n\n🍎 **Perks**:\n- Daily catered lunches + snack bars\n- Commuter benefits ($300/month)\n- Company-sponsored vacations (at milestone years)\n- 'Faith Fund' - $2,000/year for personal development\n\nWhich benefits would you like more details on?"
+    - text: "We design our benefits to evolve with your life stages:\n\n**For New Hires**:\n- $5,000 relocation assistance\n- 30-day 'Buddy Program'\n- Signing bonus (role-dependent)\n\n**For Families**:\n- $10,000 fertility/adoption assistance\n- Backup childcare ($100/day credit)\n- College savings plan matching\n\n**For Seasoned Team Members**:\n- Executive coaching\n- Board placement opportunities\n- Angel investing training\n\n**Retirement Transition**:\n- Phased retirement options\n- 401(k) to IRA rollover assistance\n- Alumni network access\n\nAll benefits begin Day 1 - no waiting periods!"
 
   utter_job_requirements:
-    - text: "For {job_title} in {department}, we typically look for {requirements}. Would you like me to check if you meet these?"
-    - text: "The {job_title} position requires {requirements}. Let me know if you'd like to discuss your qualifications."
+    - text: "For the {job_title} role in {department}, we're looking for candidates with the following key qualifications:"
+    - text: "Here are the primary requirements for the position you're interested in:"
 
   utter_recruitment_process:
-    - text: "For {job_title}, our process includes: 1) Resume review 2)screening 3) Technical assessment 4) Final interview."
-    - text: "After applying for roles, you'll go through these stages: application review, interviews (2-3 rounds), and reference checks."
+    - text: "For {job_title}, our recruitment process: 1) Resume review 2)screening 3) Technical assessment 4) Final interview."
+    - text: "After applying for roles, recruitment process:, you'll go through these stages: application review, interviews (2-3 rounds), and reference checks."
 
   utter_how_to_apply:
-    - text: "To apply for {job_title}: 1) Click 'Apply' 2) Complete the form 3) Upload documents. Your current stage: {application_stage}."
-    - text: "For positions: select the role, fill your details, upload resume (Status: {resume_uploaded}), and submit."
+    - text: "To apply for job, follow these steps: 1) Select your desired role 2) Complete the online application form 3) Upload your resume 4) Submit, Do you want to apply?"
+    - text: "Our application process is simple: Choose a job, fill out the form, upload your resume, and submit!,Do you want to apply?"
+    - text: "Go through our website carrer page & select the appropriate job. Fill out the application form, upload your resume, and submit it.,Do you want to apply?"
 
   utter_upload_resume:
-    - text: "Please upload your resume for {job_title} in PDF Current upload status: {resume_uploaded}."
-    - text: "To proceed with your application, we need your resume (Supported formats: PDF)."
+    - text: "Please upload your resume in PDF format. Make sure it highlights your relevant skills and experience."
+    - text: "Ready to upload your resume? We accept PDF files that showcase your professional background."
 
   utter_confirm_application:
-    - text: "Ready to apply for {job_title} in {department}? Let's begin with your contact details."
-    - text: "Starting your application for {job_title}. First, I'll need your {required_fields}."
+    - text: "Great! Let's start your application for the {job_title} position in {department}."
+    - text: "Excellent choice! We'll guide you through the application process step by step."
 
   utter_application_status:
-    - text: "Application {application_id} for {job_title} is currently: {application_stage}. Next step: {next_step}."
-    - text: "Status update: Your {department} application is at '{application_stage}' stage. Expect updates within {timeline}."
+    - text: "Your application for {job_title} is currently in the '{application_stage}' stage."
+    - text: "Current status of your application: {application_stage}"
 
   utter_interview_scheduling:
-    - text: "For your {job_title} interview, we have these {interview_type} slots: {slots}. Preferred date: {interview_date}?"
-    - text: "Scheduling {department} interview. Available {interview_type} times: {slots}. Your selected: {interview_date} at {interview_time}."
+    - text: "We have several interview slots available. Let's find the best time for you."
+    - text: "Interview scheduling is flexible. When would you be available?"
 
-  utter_technical_support:
-    - text: "I've logged this issue for application {application_id}. Our tech team will contact you at {candidate_email}."
-    - text: "Technical issue detected. We've notified support and will update {candidate_name} at {candidate_phone}."
-
-  utter_withdraw_application:
-    - text: "Application {application_id} for {job_title} has been withdrawn. Contact {candidate_email} if this was unintended."
-    - text: "We've processed withdrawal for {candidate_name}'s {department} application. You may reapply anytime."
-
+ 
   utter_ask_name:
-    - text: "May I have your full name for the application?"
+    - text: "To proceed with your application, could you please share your full name?"
     - text: "What name should we use for your candidate profile?"
 
   utter_ask_email:
     - text: "Please provide your email address for application updates."
-    - text: "What's the best email to contact you about your application?"
+    - text: "What's the best phone number to reach you?"
 
   utter_ask_phone:
     - text: "Could you share your phone number for interview scheduling?"
     - text: "We'll need a contact number for next steps. What's your phone number?"
 
   utter_ask_application_id:
-    - text: "Could you please provide your application ID?"
-    - text: "I'll need your application ID to look up your information. What is it?"
+    - text: "Could you provide your application ID to help me locate your application?"
+    - text: "I'll need your unique application ID to check its status."
+
   
   utter_confirm_interview:
-    - text: "Your interview has been scheduled for {interview_date} at {interview_time}. A confirmation has been sent to {candidate_email}."
-    - text: "Interview confirmed! You'll receive details about your {interview_type} interview on {interview_date} at {interview_time}."
+    - text: "Your interview is confirmed for {interview_date} at {interview_time} in {interview_type}. An email confirmation will be sent to {candidate_email}."
+    - text: "Interview details have been recorded. We look forward to meeting you!"
 
-  utter_default:
-    - text: "Do you need to contact HR department for this? I can transfer you to the HR team."
-    - text: "Call the HR team at 1-800-HR-HELP for further assistance."
+  utter_technical_support:
+    - text: "We're sorry you're experiencing a technical issue. Our support team will investigate and contact you shortly."
+    - text: "Technical difficulties detected. We'll work on resolving this promptly."
+
+  utter_withdraw_application:
+    - text: "Your application for {job_title} has been withdrawn as requested."
+    - text: "Application withdrawal processed. You may reapply in the future if interested."
+
+
+ 
 
 actions:
   - action_fetch_jobs
@@ -255,13 +267,17 @@ actions:
   - action_start_application
   - action_check_requirements
   - action_check_status
-  - action_schedule_interview
-  - action_withdraw_application
-  - action_escalate_technical_issue
   - action_save_candidate_info
+  - action_store_application 
+
+  - action_schedule_interview
+  - utter_confirm_interview
+  - action_withdraw_application
+
+  - action_escalate_technical_issue
   - action_update_application_stage
   - action_transfer_to_hr
-  - utter_confirm_interview
+
 
 forms:
   candidate_info_form:

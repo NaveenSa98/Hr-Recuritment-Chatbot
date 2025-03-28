@@ -111,10 +111,37 @@ body {
     color: white;
 }
 
+/* Add these styles to your existing CSS */
 .bot-message {
-    align-self: flex-start;
-    background-color: #e6e6e6;
-    color: var(--text-color);
+    white-space: pre-line; /* Preserves line breaks */
+    text-align: left;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 18px;
+    background: #f1f1f1;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.chat-button {
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 18px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.chat-button:hover {
+    background: #3367d6;
 }
 
 .welcome-message {
