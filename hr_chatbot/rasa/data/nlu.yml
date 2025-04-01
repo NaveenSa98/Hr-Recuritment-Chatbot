@@ -47,6 +47,13 @@ nlu:
     - fine
     - confirm
     - proceed
+    - start application
+    - begin application
+    - begin
+    - go ahead
+    - let's do it
+    - Yes, continue
+    - accepted
 
 - intent: ask_company_culture
   examples: |
@@ -142,8 +149,8 @@ nlu:
     - Do you have part-time jobs?
     - What internships are available?
     - Are there any product roles?
-    - Is the [job title] position open?
-    - is [department] hiring?
+    - Is the [software Enginner](job_title) position open?
+    - is [Engineering](department) hiring?
     - What's the latest job posting?
     - Can I see all vacancies?
     - Current job vacancies
@@ -155,10 +162,19 @@ nlu:
 
 - intent: ask_job_requirements  
   examples: |  
-    - What are the qualifications for [Job Title]?  
+    - What are the qualifications for [software Engineer](job_title)? 
+    - Do I need a degree for [DevOps Engineer](job_title)?
+    - What skills are required for [Data Analyst](job_title)?
+    - requirements for [UX/UI Designer](job_title)
+    - [Software Engineer](job_title) requirements
+    - What do I need to apply for [Content Writer](job_title)?
+    - qualifications needed for [Financial Analyst](job_title)
+    - What are the must-have skills for [Customer Success Manager](job_title)?
+    - [Operations Manager](job_title) job requirements
+    - What background is needed for [HR Coordinator](job_title)? 
     - Do I need a degree for this role?  
     - What skills are required?  
-    - Is [X certification] mandatory?  
+    - Requirements for the [software Enginner] (job_title)?  
     - How many years of experience do you need?  
     - Are there any technical tests?  
     - What programming languages should I know?  
@@ -168,18 +184,6 @@ nlu:
     - Will you train someone without experience?  
     - Are there language requirements?  
     - Do I need to relocate for this job?  
-    - Is travel required?  
-    - Are there physical requirements for this role?  
-    - What tools should I be proficient in?  
-    - Do you sponsor work visas?  
-    - Is a cover letter required?  
-    - What education background is preferred?  
-    - Are referrals mandatory?  
-    - What's the ideal candidate profile?  
-    - Does this role require public speaking?  
-    - Are there any age restrictions?  
-    - Will you consider self-taught candidates?  
-    - Are there security clearance needs?  
     - Qualifications for the position
     - What do I need to apply?
     - Experience requirements
@@ -191,8 +195,8 @@ nlu:
 - intent: ask_recruitment_process
   examples: |
     - How does the hiring process work?
-    - hiring process
-    - How to get hired
+    - hiring process?
+    - How to get hired?
     - recruitment steps
     - recruitment workflow
     - application steps
@@ -232,16 +236,15 @@ nlu:
 
 - intent: ask_how_to_apply
   examples: |
-    - How to apply for job 
+    - How to apply for job ?
     - application method
-    - how do I apply
+    - how do I apply [software Enginner](job_title)?
     - steps to apply
     - apply process
     - job application steps
     - how can I apply
     - way to apply
     - application procedure
-    - submit application
     - apply for position
     - How do I submit my application
     - What is the application process
@@ -259,40 +262,22 @@ nlu:
     - Explain the application method
     - What are the application steps
     
-- intent: upload_resume
+- intent: submit_application_form
   examples: |
-      - How do I upload my resume
-      - Can I submit my CV
-      - Where do I upload my resume
-      - Help me upload my application
-      - How can I send my resume
-      - What is the resume upload process
-      - Can you guide me in uploading my CV
-      - Tell me about resume submission
-      - How do I submit my documents
-      - Where should I upload my application
-      - Help me with resume upload
-      - What are the steps to submit my resume
-      - Can you assist with document upload
-      - How to send my professional profile
-      - Guide me through resume submission
-      - What format should my resume be in
-      - Where do I upload my career documents
-
-
-- intent: confirm_application
-  examples: |
-      - Yes, I want to apply
-      - I'm ready to apply
-      - Let's do the application
-      - Proceed with application
-      - Yes please
-      - Start my application
-      - Open the form
-      - I'd like to apply now
-      - Show me the application
-      - Yes, continue
-      - I'm interested in this role
+    - submit my CV
+    - submit my application
+    - submit CV
+    - submit form
+    - submit application
+    - I've completed the form
+    - I'm done filling the form
+    - finished with my application
+    - application complete
+    - CV form complete
+    - submit my details
+    - send my application
+    - process my application
+    - I want to submit now
 
 - intent: ask_application_status
   examples: |
@@ -321,6 +306,23 @@ nlu:
     - Can I get feedback on my application?
     - Has the hiring manager reviewed me?
     - What's the delay in my process?
+
+- intent: provide_application_id
+  examples: |
+    - My application ID is [12345](application_id)
+    - Application ID [67890](application_id)
+    - The ID is [54321](application_id)
+    - My ID is [98765](application_id)
+    - Application number [11223](application_id)
+    - ID for my application is [44556](application_id)
+    - Reference number [77889](application_id)
+    - My reference ID is [99000](application_id)
+    - The reference number is [12321](application_id)
+    - My application reference is [45678](application_id)
+    - ID for my application is [89101](application_id)
+    - My application reference number is [23456](application_id)
+    - My application number is [78901](application_id)
+    - My application ID is [34567](application_id)
 
 - intent: ask_interview_scheduling
   examples: |

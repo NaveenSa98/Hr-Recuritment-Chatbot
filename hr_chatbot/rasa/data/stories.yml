@@ -28,14 +28,13 @@ stories:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
-  # - action: utter_job_requirements
   - action: action_check_requirements
-  - intent: confirm_application
-  - action: utter_confirm_application
-  - intent: upload_resume
-  - action: utter_upload_resume
-  - action: action_store_resume
-  - action: action_store_application  
+  - intent: affirm
+  - action: action_show_application_form
+  - intent: submit_application_form
+  - action: action_process_application
+  - action: action_store_application
+  - action: utter_application_submitted
   - intent: ask_recruitment_process
   - action: utter_recruitment_process
   - intent: goodbye
@@ -46,7 +45,7 @@ stories:
   steps:
   - intent: ask_application_status
   - action: utter_ask_application_id
-  - intent: affirm
+  - intent: provide_application_id
   - action: action_check_status
   - action: utter_application_status
   - intent: ask_interview_scheduling
@@ -75,21 +74,10 @@ stories:
   steps:
   - intent: withdraw_application
   - action: utter_ask_application_id
-  - intent: affirm
+  - intent: provide_application_id
   - action: action_withdraw_application
   - action: utter_withdraw_application
 
-# Contact Information Collection
-- story: collect candidate info
-  steps:
-  - intent: confirm_application
-  - action: utter_ask_name
-  - intent: affirm
-  - action: utter_ask_email
-  - intent: affirm
-  - action: utter_ask_phone
-  - intent: affirm
-  - action: action_save_candidate_info
 
 # Fallback Scenario
 - story: handle default
@@ -99,21 +87,29 @@ stories:
   - intent: affirm
   - action: action_transfer_to_hr
 
-# Resume Upload Guidance
-- story: resume upload guidance
-  steps:
-  - intent: upload_resume
-  - action: utter_upload_resume
-  - intent: ask_how_to_apply
-  - action: utter_how_to_apply
-
 # Comprehensive Job Search
 - story: comprehensive job search
   steps:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
-  # - action: utter_job_requirements
   - action: action_check_requirements
   - intent: ask_recruitment_process
   - action: utter_recruitment_process
+
+  
+# CV Application Form Flow
+- story: cv application form submission
+  steps:
+  - intent: ask_how_to_apply
+  - action: utter_how_to_apply
+  - intent: ask_job_openings
+  - action: action_fetch_jobs
+  - intent: ask_job_requirements
+  - action: action_check_requirements
+  - intent: affirm
+  - action: action_show_application_form
+  - intent: submit_application_form
+  - action: action_process_application
+  - action: action_store_application
+  - action: utter_application_submitted

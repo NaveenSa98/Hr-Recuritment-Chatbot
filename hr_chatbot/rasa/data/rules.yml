@@ -34,9 +34,7 @@ rules:
   - intent: ask_application_status
   - action: utter_ask_application_id
 
-  
-
-# Withdrawal Process
+  # Withdrawal Process
 - rule: Process withdrawal with ID
   condition:
     - slot_was_set:
@@ -54,5 +52,7 @@ rules:
   steps:
   - intent: withdraw_application
   - action: utter_ask_application_id
+
+
 
 
