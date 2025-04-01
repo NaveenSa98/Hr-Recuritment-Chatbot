@@ -2,6 +2,8 @@ import os
 import sys
 import psycopg2
 from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 # Determine the project root directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -140,4 +142,190 @@ def get_job_requirements(title):
     finally:
         if conn:
             cursor.close()
+            conn.close()
+
+def save_resume_file(resume_file):
+    """
+    Save the uploaded resume file to a specified directory.
+    """
+    if not resume_file:
+        return None
+    
+    try:
+        upload_dir = os.path.join(os.getcwd(), 'uploads')
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+
+        filename = secure_filename(resume_file.filename)
+        # Fix: Use datetime.now() instead of datetime.datetime.now()
+        unique_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
+
+        file_path = os.path.join(upload_dir, unique_filename)
+        resume_file.save(file_path)
+
+        return os.path.join('uploads', unique_filename)
+    except Exception as e:
+        print(f"Error saving resume file: {e}")
+        return None
+
+def insert_candidate_info(first_name, last_name, email, phone, position, education, resume_path):
+    """
+    Insert candidate information into the database.
+    """
+    conn = connect_to_db()
+    if not conn:
+        return False
+    
+    try:
+        cursor = conn.cursor()
+        # Fix: SQL parameters should match the values (7 parameters, not 8)
+        cursor.execute("""INSERT INTO candidates (first_name, last_name, email, phone, position, education, resume_path) 
+                          VALUES (%s, %s, %s, %s, %s, %s, %s)
+                          RETURNING candidate_id
+                       """, (first_name, last_name, email, phone, position, education, resume_path))
+        
+        candidate_id = cursor.fetchone()[0]
+        conn.commit()
+        return candidate_id
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error inserting candidate info: {e}")
+        return False
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+def create_application(candidate_id, job_id):
+    """
+    Create a new application record linking a candidate to a job
+    Returns application_id if successful, None otherwise
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor()
+        
+        # Check if application already exists
+        cur.execute("""
+            SELECT application_id FROM applications 
+            WHERE candidate_id = %s AND job_id = %s
+        """, (candidate_id, job_id))
+        
+        existing_app = cur.fetchone()
+        if existing_app:
+            # Update existing application
+            application_id = existing_app[0]
+            cur.execute("""
+                UPDATE applications 
+                SET status = 'form_completed', last_updated = CURRENT_TIMESTAMP
+                WHERE application_id = %s
+                RETURNING application_id
+            """, (application_id,))
+        else:
+            # Create new application
+            cur.execute("""
+                INSERT INTO applications (candidate_id, job_id, status,applied_at, last_updated)
+                VALUES (%s, %s, 'form_completed',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                RETURNING application_id
+            """, (candidate_id, job_id, 'form_completed'))
+        
+        application_id = cur.fetchone()[0]
+        conn.commit()
+        return application_id
+    except Exception as e:
+        conn.rollback()
+        print(f"Error creating application: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+def get_job_id_by_title(title):
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT job_id FROM jobs
+            WHERE title = %s AND status = 'OPEN'
+            LIMIT 1
+        """, (title,))
+        
+        result = cur.fetchone()
+        return result[0] if result else None
+    except Exception as e:
+        print(f"Error getting job ID: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+def get_application_by_id(application_id):
+    """
+    Fetch application details by application ID.
+
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT status, application_id
+            FROM applications
+            WHERE application_id = %s
+        """, (application_id,))
+        
+        result = cur.fetchone()
+        return result if result else None
+    except Exception as e:
+        print(f"Error getting application details: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+
+def get_application_status(application_id):
+    """
+    Get the status of an application
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT a.status, j.title, c.first_name, c.last_name, c.email
+            FROM applications a
+            JOIN jobs j ON a.job_id = j.job_id
+            JOIN candidates c ON a.candidate_id = c.candidate_id
+            WHERE a.application_id = %s
+        """, (application_id,))
+        
+        result = cur.fetchone()
+        if result:
+            return {
+                "status": result[0],
+                "job_title": result[1],
+                "candidate_name": f"{result[2]} {result[3]}",
+                "email": result[4]
+            }
+        return None
+    except Exception as e:
+        print(f"Error fetching application status: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
             conn.close()

@@ -3,7 +3,6 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 def connect_to_db():
@@ -21,7 +20,6 @@ def connect_to_db():
         return None
     
 def create_table():
-
     conn = connect_to_db()
     if not conn:
         return False
@@ -29,61 +27,82 @@ def create_table():
     try:
         cur = conn.cursor()
 
+        # Enable UUID extension for other tables
+        cur.execute("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+
         cur.execute("""
         CREATE TABLE IF NOT EXISTS jobs (
-            job_id SERIAL PRIMARY KEY,
+            job_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
             title VARCHAR(200) NOT NULL,
             department VARCHAR(50) NOT NULL,
-            description TEXT ,
+            description TEXT,
             requirements TEXT NOT NULL,
             salary_range VARCHAR(50),
             benefits TEXT,
             location VARCHAR(200),
             job_type VARCHAR(50),  
             status VARCHAR(50) DEFAULT 'OPEN',
-                    
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );""")
-
+        );
+        """)
 
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS candidates (
-                candidate_id SERIAL PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                email VARCHAR(100) UNIQUE NOT NULL,
-                phone VARCHAR(20),
-                resume_data BYTEA,
-                resume_filename VARCHAR(255),
-                    
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );""")
-        
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS applications (
-                application_id SERIAL PRIMARY KEY,
-                candidate_id INTEGER REFERENCES candidates(candidate_id),
-                job_id INTEGER REFERENCES jobs(job_id),
-                status VARCHAR(50) NOT NULL DEFAULT 'not_started',
+        CREATE TABLE IF NOT EXISTS candidates (
+            candidate_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+            first_name VARCHAR(25) NOT NULL,
+            last_name  VARCHAR(25) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            phone VARCHAR(20),
+            position VARCHAR(20) NOT NULL,
+            education VARCHAR(200),
+            resume_path VARCHAR(255),
+            status VARCHAR(50) NOT NULL DEFAULT 'received',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
 
-                applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );""")
-        
         cur.execute("""
-            CREATE TABLE IF NOT EXISTS interviews (
-                interview_id SERIAL PRIMARY KEY,
-                application_id INTEGER REFERENCES applications(application_id),
-                interview_date DATE NOT NULL,
-                interview_time TIME NOT NULL,
-                interview_type VARCHAR(20) NOT NULL DEFAULT 'virtual',
-                interviewer VARCHAR(100),
-                notes TEXT,
-                status VARCHAR(50) DEFAULT 'scheduled'
-            );
-            """)
-        
+        CREATE TABLE IF NOT EXISTS applications (
+            application_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 10000 INCREMENT BY 1),
+            candidate_id UUID NOT NULL,
+            job_id UUID NOT NULL,
+            status VARCHAR(50) NOT NULL DEFAULT 'not_started',
+            applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (candidate_id) REFERENCES candidates(candidate_id) ON DELETE CASCADE,
+            FOREIGN KEY (job_id) REFERENCES jobs(job_id) ON DELETE CASCADE
+        );
+        """)
+
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS interviews (
+            interview_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+            application_id INTEGER NOT NULL,
+            interview_date DATE NOT NULL,
+            interview_time TIME NOT NULL,
+            interview_type VARCHAR(20) NOT NULL DEFAULT 'virtual',
+            interviewer VARCHAR(100),
+            notes TEXT,
+            status VARCHAR(50) DEFAULT 'scheduled',
+            FOREIGN KEY (application_id) REFERENCES applications(application_id) ON DELETE CASCADE
+        );
+        """)
+
+        # Creating indexes for faster queries
+        cur.execute("""
+            CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status);
+            CREATE INDEX IF NOT EXISTS idx_candidates_email ON candidates(email);
+            CREATE INDEX IF NOT EXISTS idx_candidates_status ON candidates(status);
+            CREATE INDEX IF NOT EXISTS idx_applications_status ON applications(status);
+            CREATE INDEX IF NOT EXISTS idx_applications_candidate ON applications(candidate_id);
+            CREATE INDEX IF NOT EXISTS idx_applications_job ON applications(job_id);
+            CREATE INDEX IF NOT EXISTS idx_interviews_application ON interviews(application_id);
+            CREATE INDEX IF NOT EXISTS idx_interviews_date ON interviews(interview_date);
+            CREATE INDEX IF NOT EXISTS idx_interviews_status ON interviews(status);
+        """)
+
         conn.commit()
-        print ("Tables created successfully")
+        print("Tables created successfully")
         return True
     except Exception as e:
         conn.rollback()
@@ -97,10 +116,3 @@ def create_table():
 
 if __name__ == "__main__":
     create_table()
-
-    
-
-
-
-           
-        

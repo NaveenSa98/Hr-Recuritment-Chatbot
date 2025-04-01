@@ -176,3 +176,4 @@ cython_debug/
 
 bot_env/*
 hr_chatbot/rasa/models/*
+hr_chatbot/rasa/.rasa/*
