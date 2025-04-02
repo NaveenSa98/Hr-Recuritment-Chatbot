@@ -31,29 +31,39 @@ nlu:
 
 - intent: affirm
   examples: |
-    - yes
+    - yeah
     - agreed
     - sure
     - of course
     - absolutely
     - definitely
     - yep
-    - yes please
-    - yes, please
     - thank you
     - hola
     - appriciate
     - great
     - fine
     - confirm
-    - proceed
+    - go ahead
+    - let's do it
+    - accepted
+
+- intent: start_application_form
+  examples: |
     - start application
     - begin application
     - begin
-    - go ahead
-    - let's do it
+    - proceed
+    - yes please
+    - yes, please
     - Yes, continue
-    - accepted
+    - show application
+    - start the process
+    - let's get started
+    - initiate application
+    - start the form
+    - open application
+    - apply application
 
 - intent: ask_company_culture
   examples: |
@@ -151,6 +161,7 @@ nlu:
     - Are there any product roles?
     - Is the [software Enginner](job_title) position open?
     - is [Engineering](department) hiring?
+    - What are the latest job openings in the [Marketing](department) department?
     - What's the latest job posting?
     - Can I see all vacancies?
     - Current job vacancies
@@ -165,7 +176,7 @@ nlu:
     - What are the qualifications for [software Engineer](job_title)? 
     - Do I need a degree for [DevOps Engineer](job_title)?
     - What skills are required for [Data Analyst](job_title)?
-    - requirements for [UX/UI Designer](job_title)
+    - requirements for [UX/UI Designer](job_title) position
     - [Software Engineer](job_title) requirements
     - What do I need to apply for [Content Writer](job_title)?
     - qualifications needed for [Financial Analyst](job_title)

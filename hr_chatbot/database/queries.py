@@ -1,6 +1,7 @@
 import os
 import sys
 import psycopg2
+import random
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -208,41 +209,30 @@ def create_application(candidate_id, job_id):
     try:
         cur = conn.cursor()
         
-        # Check if application already exists
+        # Let the database generate the application_id automatically
         cur.execute("""
-            SELECT application_id FROM applications 
-            WHERE candidate_id = %s AND job_id = %s
+            INSERT INTO applications (candidate_id, job_id, status, applied_at, last_updated)
+            VALUES (%s, %s, 'form_completed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            RETURNING application_id
         """, (candidate_id, job_id))
         
-        existing_app = cur.fetchone()
-        if existing_app:
-            # Update existing application
-            application_id = existing_app[0]
-            cur.execute("""
-                UPDATE applications 
-                SET status = 'form_completed', last_updated = CURRENT_TIMESTAMP
-                WHERE application_id = %s
-                RETURNING application_id
-            """, (application_id,))
-        else:
-            # Create new application
-            cur.execute("""
-                INSERT INTO applications (candidate_id, job_id, status,applied_at, last_updated)
-                VALUES (%s, %s, 'form_completed',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                RETURNING application_id
-            """, (candidate_id, job_id, 'form_completed'))
-        
-        application_id = cur.fetchone()[0]
+        result = cur.fetchone()
         conn.commit()
-        return application_id
+        
+        if result:
+            return result[0]  # Return the application_id
+        return None
+        
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         print(f"Error creating application: {e}")
         return None
     finally:
         if conn:
             cur.close()
             conn.close()
+
 
 def get_job_id_by_title(title):
     conn = connect_to_db()

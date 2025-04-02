@@ -1,8 +1,8 @@
 import os
 import sys
 from rasa_sdk.events import SlotSet
-import random
-import string
+
+import json
 
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -222,24 +222,13 @@ class ActionProcessApplication(Action):
             tracker: Tracker, 
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        dispatcher.utter_message(text = "I've recevied your application form! Processing your information....")
+        dispatcher.utter_message(text = "I've recevied your application form! Submitted your information....")
 
         return [SlotSet("application_stage", "form_completed")]
     
 
-class ActionStoreApplication(Action):
-    def name(self) -> Text:
-        return "action_store_application"
-    
-    def run(self, 
-            dispatcher: CollectingDispatcher, 
-            tracker: Tracker, 
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
-        application_id = str(random.randint(10000, 99999))
 
-        return [SlotSet("application_id", application_id)]
-    
+        
 class ActionCheckStatus(Action):
     def name(self) -> Text:
         return "action_check_status"

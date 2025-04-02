@@ -29,11 +29,10 @@ stories:
   - action: action_fetch_jobs
   - intent: ask_job_requirements
   - action: action_check_requirements
-  - intent: affirm
+  - intent: start_application_form
   - action: action_show_application_form
   - intent: submit_application_form
   - action: action_process_application
-  - action: action_store_application
   - action: utter_application_submitted
   - intent: ask_recruitment_process
   - action: utter_recruitment_process
@@ -43,9 +42,13 @@ stories:
 # Application Status Check
 - story: check application status
   steps:
+  - intent: greet
+  - action: utter_greet
   - intent: ask_application_status
   - action: utter_ask_application_id
   - intent: provide_application_id
+    entities:
+    - application_id: "12345" 
   - action: action_check_status
   - action: utter_application_status
   - intent: ask_interview_scheduling
@@ -107,9 +110,9 @@ stories:
   - action: action_fetch_jobs
   - intent: ask_job_requirements
   - action: action_check_requirements
-  - intent: affirm
+  - intent: start_application_form
   - action: action_show_application_form
   - intent: submit_application_form
   - action: action_process_application
-  - action: action_store_application
   - action: utter_application_submitted
+

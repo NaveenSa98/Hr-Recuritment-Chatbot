@@ -63,7 +63,7 @@ def create_table():
 
         cur.execute("""
         CREATE TABLE IF NOT EXISTS applications (
-            application_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 10000 INCREMENT BY 1),
+            application_id INTEGER PRIMARY KEY,
             candidate_id UUID NOT NULL,
             job_id UUID NOT NULL,
             status VARCHAR(50) NOT NULL DEFAULT 'not_started',

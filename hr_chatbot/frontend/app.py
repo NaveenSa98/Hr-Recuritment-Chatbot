@@ -64,10 +64,16 @@ def webhook():
                     "content": message['buttons']
                 })
             if 'custom' in message:
-                logger.info(f"Custom payload received: {json.dumps(message['custom'])}")
+                # Extract the custom content without nesting
+                custom_content = message['custom']
+                # Remove double nesting if it exists
+                if isinstance(custom_content, dict) and 'custom' in custom_content:
+                    custom_content = custom_content['custom']
+                
+                logger.info(f"Processed custom payload: {json.dumps(custom_content)}")
                 responses.append({
                     "type": "custom",
-                    "content": message['custom']
+                    "content": custom_content
                 })
         
         # If no responses were generated, add a fallback message
@@ -104,8 +110,8 @@ def submit_application():
         first_name = request.form.get('firstName', '').strip()
         last_name = request.form.get('lastName', '').strip()
         email = request.form.get('email', '').strip()
-        phone = request.form.get('phone', '').strip()  # New field
-        education = request.form.get('education', '').strip()  # New field
+        phone = request.form.get('phone', '').strip()
+        education = request.form.get('education', '').strip()
         position = request.form.get('position', '').strip()
         
         # Debug log received form data
@@ -167,7 +173,7 @@ def submit_application():
                 "message": f"Failed to store candidate information: {str(e)}"
             }), 500
         
-        # Get job_id and create application
+        # create application
         try:
             job_id = db_queries.get_job_id_by_title(position)
             if not job_id:
@@ -177,20 +183,26 @@ def submit_application():
                     "message": f"Invalid job position: {position}"
                 }), 400
             
+            # Create application with candidate_id and job_id
             application_id = db_queries.create_application(candidate_id, job_id)
+            if not application_id:
+                raise ValueError("Failed to create application")
+            
             logger.info(f"Application created with ID: {application_id}")
+            
+            #  Return success with application_id
+            return jsonify({
+                "success": True,
+                "message": "Application submitted successfully",
+                "application_id": application_id
+            })
+            
         except Exception as e:
             logger.error(f"Failed to create application: {str(e)}")
             return jsonify({
                 "success": False,
                 "message": f"Failed to create application: {str(e)}"
             }), 500
-        
-        return jsonify({
-            "success": True,
-            "message": "Application submitted successfully",
-            "application_id": application_id
-        })
         
     except Exception as e:
         logger.error(f"Error processing application: {str(e)}")

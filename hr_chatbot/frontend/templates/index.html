@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith HR Chatbot</title>
+    <title>HR Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/chatbot.css">
 </head>
 <body>
     <!-- Main Website Content -->
     <div class="container">
-        <h1>Welcome to Faith Company</h1>
+        <h1>Welcome to  Company</h1>
         <p>Explore career opportunities with us!</p>
     </div>
 
     <!-- Chatbot Popup Trigger -->
     <div id="chatbot-toggle" class="chatbot-toggle">
-        <img src="/static/images/icons8-chatbot-94.png" alt="Chatbot">
+        <i class="fas fa-comments" style="color: white; font-size: 24px;"></i>
     </div>
 
     <!-- Chatbot Popup Container -->
     <div id="chatbot-container" class="chatbot-container">
         <div class="chatbot-header">
-            <h3>Faith HR Assistant</h3>
+            <h3><i class="fas fa-robot"></i>  HR Assistant</h3>
             <button id="chatbot-close" class="chatbot-close">&times;</button>
         </div>
         
         <div id="chatbot-messages" class="chatbot-messages">
-            <div class="welcome-message">
-                <p>Hello! I'm the Faith HR Assistant. How can I help you today?</p>
-            </div>
+            <!-- Welcome message and initial options will be added by JavaScript -->
         </div>
         
         <div class="chatbot-input-area">
@@ -37,7 +37,9 @@
                 id="chatbot-input" 
                 placeholder="Type your message..."
             >
-            <button id="chatbot-send">Send</button>
+            <button id="chatbot-send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
