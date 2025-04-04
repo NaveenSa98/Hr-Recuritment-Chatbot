@@ -1,6 +1,6 @@
 import os
 import sys
-from rasa_sdk.events import SlotSet
+from rasa_sdk.events import SlotSet,FollowupAction
 
 import json
 
@@ -14,6 +14,12 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 from typing import Any, Text, Dict, List
+from datetime import datetime
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
@@ -136,7 +142,8 @@ class ActionCheckJobRequirements(Action):
             dispatcher.utter_message("Sorry, I couldn't retrieve the job details at the moment.")
         
         return []
-    
+
+
 
 class ActionShowApplicationForm(Action):
     def name(self) -> Text:
@@ -213,22 +220,7 @@ class ActionShowApplicationForm(Action):
         dispatcher.utter_message(json_message={"custom": form_data})
         return []
     
-class ActionProcessApplication(Action):
-    def name(self) -> Text:
-        return "action_process_application"
-    
-    def run(self, 
-            dispatcher: CollectingDispatcher, 
-            tracker: Tracker, 
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
-        dispatcher.utter_message(text = "I've recevied your application form! Submitted your information....")
 
-        return [SlotSet("application_stage", "form_completed")]
-    
-
-
-        
 class ActionCheckStatus(Action):
     def name(self) -> Text:
         return "action_check_status"
@@ -267,11 +259,214 @@ class ActionCheckStatus(Action):
             SlotSet("job_title", job_title),
             SlotSet("application_stage", status)
         ]
+    
 
+class ActionScheduleInterview(Action):
+    def name(self) -> Text:
+        return "action_schedule_interview"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
+        application_id = tracker.get_slot("application_id")
+        
+        if not application_id:
+            dispatcher.utter_message(text="I need your application ID to check if you're eligible for an interview.")
+            return []
+        
+        # Remove any non-numeric characters if present
+        if not application_id.isdigit():
+            # Extract numeric part
+            app_id = ''.join(filter(str.isdigit, application_id))
+            if not app_id:
+                dispatcher.utter_message(text="Please provide a valid application ID which should be a numeric value.")
+                return []
+            application_id = app_id
+        
+        # Get application status from database
+        application_info = db_queries.get_application_status(application_id)
+        
+        if not application_info:
+            dispatcher.utter_message(text=f"I couldn't find any application with ID {application_id}. Please check if the ID is correct.")
+            return []
+        
+        # Check if application is shortlisted
+        status = application_info["status"]
+        job_title = application_info["job_title"]
+        
+        if status.lower() != "shortlisted":
+            dispatcher.utter_message(text=f"Your application for {job_title} is currently in '{status}' status. Only shortlisted candidates can schedule interviews.")
+            return [
+                SlotSet("job_title", job_title),
+                SlotSet("application_stage", status)
+            ]
+        
+        # Get available interview slots
+        available_slots = db_queries.get_available_interview_slots(application_id)
+        
+        if not available_slots or len(available_slots) == 0:
+            dispatcher.utter_message(text=f"There are no available interview slots for your application at the moment. Our HR team will contact you soon.")
+            return [
+                SlotSet("job_title", job_title),
+                SlotSet("application_stage", status)
+            ]
+        
+        # Format interview slots as buttons
+        buttons = []
+        for slot in available_slots:
+            # Convert date and time to strings if they're datetime objects
+            if hasattr(slot["interview_date"], 'strftime'):
+                date_str = slot["interview_date"].strftime("%A, %B %d, %Y")
+            else:
+                date_str = str(slot["interview_date"])
+                
+            if hasattr(slot["interview_time"], 'strftime'):
+                time_str = slot["interview_time"].strftime("%I:%M %p")
+            else:
+                time_str = str(slot["interview_time"])
+                
+            interview_id = str(slot["interview_id"])  # Ensure UUID is converted to string
+            
+            payload = f'/select_interview_slot{{"interview_id":"{interview_id}","date":"{date_str}","time":"{time_str}","application_id":"{application_id}"}}'
+            buttons.append({
+                "title": f"{date_str} at {time_str}",
+                "payload": payload
+            })
+        
+        dispatcher.utter_message(
+            text=f"Great! Your application for {job_title} has been shortlisted. Here are the available interview slots:",
+            buttons=buttons
+        )
+        
+        return [
+            SlotSet("job_title", job_title),
+            SlotSet("application_stage", status)
+        ]
 
 
+
+class ActionSelectInterviewSlot(Action):
+    def name(self) -> Text:
+        return "action_select_interview_slot"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        interview_id = tracker.get_slot("interview_id")
+        interview_date = tracker.get_slot("interview_date")
+        interview_time = tracker.get_slot("interview_time")
+        application_id = tracker.get_slot("application_id")
+        
+        if not interview_id or not interview_date or not interview_time or not application_id:
+            dispatcher.utter_message(text="I couldn't process your selection. Please try again.")
+            return []
+        
+        # Get interview details WITHOUT updating any status
+        interview_details = db_queries.get_interview_details(interview_id)
+        
+        if not interview_details:
+            dispatcher.utter_message(text="Sorry, this interview slot is no longer available. Please select another slot.")
+            return []
+        
+        # Check if the interview is still available
+        if interview_details.get("status") != "available":
+            dispatcher.utter_message(text="Sorry, this interview slot has already been taken. Please select another slot.")
+            return []
+        
+     
+        interview_type = interview_details.get("interview_type", "Virtual")
+        interviewer = interview_details.get("interviewer", "HR Team")
+        
+        # Create a custom payload for the interview details
+        interview_payload = {
+            "payload": "interview_details",
+            "interview_id": str(interview_id),  
+            "date": interview_date, 
+            "time": interview_time,  
+            "type": interview_type,
+            "interviewer": interviewer,
+            "application_id": str(application_id),  
+            "job_title": tracker.get_slot("job_title") or "Applied Position"
+        }
+
+        # Send the interview details message
+        dispatcher.utter_message(text=f"You've selected an interview slot for {interview_date} at {interview_time}. Here are the details:")
+        dispatcher.utter_message(json_message={"interview_details": interview_payload})
+
+         
+        buttons = [
+           
+            {
+                "title": "Select a different slot",
+                "payload": f'/ask_interview_scheduling{{"application_id":"{application_id}"}}'
+            }
+        ]
+        
+        dispatcher.utter_message(
+            buttons=buttons
+        )
+        
+        
+        
+        dispatcher.utter_message(text="Please review the interview details above. If you'd like to accept this slot, click the 'Accept Interview' button. Otherwise, you can select a different slot.")
+        
+        return [
+            SlotSet("interview_id", interview_id),
+            SlotSet("interview_date", interview_date),
+            SlotSet("interview_time", interview_time)
+        ]
+
+
+
+class ActionConfirmInterview(Action):
+    def name(self) -> Text:
+        return "action_confirm_interview"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+        # Log the start of the action
+        logger.info("ActionConfirmInterview started")
+        
+        # Get slots
+        interview_id = tracker.get_slot("interview_id")
+        application_id = tracker.get_slot("application_id")
+        interview_date = tracker.get_slot("interview_date")
+        interview_time = tracker.get_slot("interview_time")
+
+        logger.info(f"Slots: interview_id={interview_id}, application_id={application_id}, date={interview_date}, time={interview_time}")
+        
+        if not interview_id or not application_id:
+            logger.warning("Missing required slots: interview_id or application_id")
+            dispatcher.utter_message(text="I couldn't process your confirmation. Please try again.")
+            return []
+        
     
-    
+        logger.info(f"Confirming interview: interview_id={interview_id}, application_id={application_id}")
+        success = db_queries.confirm_interview(interview_id, application_id)
+        
+        if not success:
+            logger.error(f"Failed to confirm interview: interview_id={interview_id}, application_id={application_id}")
+            dispatcher.utter_message(text="Sorry, there was an error confirming your interview. Please try again or contact HR directly.")
+            return []
 
+        application_info = db_queries.get_application_status(application_id)
+        candidate_email = application_info.get("email", "") if application_info else ""
 
+        logger.info(f"Interview confirmed successfully for {candidate_email}")
+
+        confirmation_message = (
+            f"Your interview has been successfully scheduled for {interview_date} at {interview_time}. "
+            f"A confirmation email has been sent to {candidate_email}. "
+            f"Please make sure to prepare for your interview and be on time. "
+            f"If you need to reschedule, please contact our HR team at least 24 hours before your scheduled interview."
+        )
+        
+        dispatcher.utter_message(text=confirmation_message)
+        
+        return [
+            SlotSet("application_stage", "interview_scheduled")
+        ]

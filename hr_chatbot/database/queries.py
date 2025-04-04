@@ -3,8 +3,9 @@ import sys
 import psycopg2
 import random
 from dotenv import load_dotenv
+from psycopg2.extras import RealDictCursor
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 # Determine the project root directory
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -212,7 +213,7 @@ def create_application(candidate_id, job_id):
         # Let the database generate the application_id automatically
         cur.execute("""
             INSERT INTO applications (candidate_id, job_id, status, applied_at, last_updated)
-            VALUES (%s, %s, 'form_completed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            VALUES (%s, %s, ' under_review', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             RETURNING application_id
         """, (candidate_id, job_id))
         
@@ -315,6 +316,165 @@ def get_application_status(application_id):
     except Exception as e:
         print(f"Error fetching application status: {e}")
         return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+def get_available_interview_slots(application_id):
+    """
+    Get available interview slots for an application
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+
+        cur.execute("""
+            SELECT job_id FROM applications WHERE application_id = %s
+        """, (application_id,))
+        
+        app_result = cur.fetchone()
+        if not app_result:
+            return None
+        
+        job_id = app_result['job_id']
+        
+        cur.execute("""
+            SELECT interview_id, interview_date, interview_time, interview_type, interviewer
+            FROM interviews
+            WHERE status = 'available' AND application_id = %s
+            ORDER BY interview_date, interview_time
+        """, (application_id,))
+        
+        slots = cur.fetchall()
+
+        for slot in slots:
+
+            if isinstance(slot['interview_date'], datetime) or isinstance(slot['interview_date'], date):
+                slot['interview_date'] = slot['interview_date'].strftime('%Y-%m-%d')
+                
+
+            if hasattr(slot['interview_time'], 'strftime'): 
+                slot['interview_time'] = slot['interview_time'].strftime('%H:%M:%S')
+                
+
+            if hasattr(slot['interview_id'], 'hex'):  
+                slot['interview_id'] = str(slot['interview_id'])
+                
+        return slots
+    except Exception as e:
+        print(f"Error fetching interview slots: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+def get_interview_details(interview_id):
+    """
+    Get details for a specific interview slot
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT interview_id, interview_date, interview_time, interview_type, interviewer, status, notes
+            FROM interviews
+            WHERE interview_id = %s
+        """, (interview_id,))
+        
+        result = cur.fetchone()
+        
+    
+        if result:
+        
+            if 'interview_date' in result:
+                if isinstance(result['interview_date'], datetime) or isinstance(result['interview_date'], date):
+                    result['interview_date'] = result['interview_date'].strftime('%Y-%m-%d')
+            
+          
+            if 'interview_time' in result and hasattr(result['interview_time'], 'strftime'):
+                result['interview_time'] = result['interview_time'].strftime('%H:%M:%S')
+                
+
+            if 'interview_id' in result and hasattr(result['interview_id'], 'hex'):
+                result['interview_id'] = str(result['interview_id'])
+                
+        return result
+    except Exception as e:
+        print(f"Error fetching interview details: {e}")
+        return None
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+
+
+def confirm_interview(interview_id, application_id):
+    """
+    Confirm an interview by updating its status to 'scheduled'
+    """
+    conn = connect_to_db()
+    if not conn:
+        print("Failed to connect to database")
+        return False
+    
+    try:
+        cur = conn.cursor()
+        
+        print(f"Confirming interview: interview_id={interview_id}, application_id={application_id}")
+        
+      
+        cur.execute("""
+            SELECT status FROM interviews WHERE interview_id = %s
+        """, (interview_id,))
+        
+        interview = cur.fetchone()
+        if not interview:
+            print(f"Interview not found: interview_id={interview_id}")
+            return False
+            
+        print(f"Current interview status: {interview[0]}")
+        
+
+        cur.execute("""
+            UPDATE interviews
+            SET status = 'scheduled'
+            WHERE interview_id = %s AND status = 'available'
+        """, (interview_id,))
+        
+        rows_updated = cur.rowcount
+        print(f"Interviews table rows updated: {rows_updated}")
+        
+        if rows_updated == 0:
+            print("No rows updated in interviews table. Interview may already be scheduled.")
+            
+  
+        cur.execute("""
+            UPDATE applications
+            SET status = 'interview_scheduled'
+            WHERE application_id = %s
+        """, (application_id,))
+        
+        app_rows_updated = cur.rowcount
+        print(f"Applications table rows updated: {app_rows_updated}")
+        
+        conn.commit()
+        
+
+        return rows_updated > 0 or app_rows_updated > 0
+    except Exception as e:
+        conn.rollback()
+        print(f"Error confirming interview: {e}")
+        return False
     finally:
         if conn:
             cur.close()

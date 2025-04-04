@@ -63,10 +63,11 @@ def create_table():
 
         cur.execute("""
         CREATE TABLE IF NOT EXISTS applications (
-            application_id INTEGER PRIMARY KEY,
+            application_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 10000 INCREMENT BY 1),
+
             candidate_id UUID NOT NULL,
             job_id UUID NOT NULL,
-            status VARCHAR(50) NOT NULL DEFAULT 'not_started',
+            status VARCHAR(50) NOT NULL DEFAULT 'under_review',
             applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (candidate_id) REFERENCES candidates(candidate_id) ON DELETE CASCADE,
@@ -83,8 +84,7 @@ def create_table():
             interview_type VARCHAR(20) NOT NULL DEFAULT 'virtual',
             interviewer VARCHAR(100),
             notes TEXT,
-            status VARCHAR(50) DEFAULT 'scheduled',
-            FOREIGN KEY (application_id) REFERENCES applications(application_id) ON DELETE CASCADE
+            status VARCHAR(50) NOT NULL DEFAULT 'available'
         );
         """)
 

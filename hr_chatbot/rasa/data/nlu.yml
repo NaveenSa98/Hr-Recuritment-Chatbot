@@ -4,457 +4,172 @@ nlu:
 - intent: greet
   examples: |
     - Hi
-    - Hello!
-    - Hey there
+    - Hello
+    - Hey
     - Good morning
     - Good afternoon
-    - Greetings
-    - Hi chatbot
-    - Hello, how are you?
-    - Hey, need help
-    - Hi, I'm looking for a job
-    - Yo!
-    - What's up?
-    - Howdy
-    - Hello, I need information
-    - Hi, can you help me?
-    - Hey, I have a question
     - Good evening
-    - Hi, I'm a candidate
-    - Hello, I'm interested in jobs here
-    - Hey, what can you do?
-    - Hi, I want to apply
-    - Hello, I'm visiting the careers page
-    - Hi, I'm exploring opportunities
-    - Hey, I'm new here
-    - Hello, nice to meet you
-
-- intent: affirm
-  examples: |
-    - yeah
-    - agreed
-    - sure
-    - of course
-    - absolutely
-    - definitely
-    - yep
-    - thank you
-    - hola
-    - appriciate
-    - great
-    - fine
-    - confirm
-    - go ahead
-    - let's do it
-    - accepted
-
-- intent: start_application_form
-  examples: |
-    - start application
-    - begin application
-    - begin
-    - proceed
-    - yes please
-    - yes, please
-    - Yes, continue
-    - show application
-    - start the process
-    - let's get started
-    - initiate application
-    - start the form
-    - open application
-    - apply application
-
-- intent: ask_company_culture
-  examples: |
-    - What's the work culture like at Faith?
-    - Tell me about Faith's culture
-    - How's the work environment?
-    - What are your company values?
-    - Describe your workplace culture
-    - What makes Faith a great place to work?
-    - How do you describe your company culture?
-    - What's the team like at Faith?
-    - Is Faith a good workplace?
-    - What are your core values?
-    - How would you describe the culture?
-    - What's the office vibe?
-    - Do you have a collaborative culture?
-    - Is Faith diverse and inclusive?
-    - What's unique about your culture?
-    - How's work-life balance at Faith?
-    - Are employees happy here?
-    - What's the management style?
-    - Do you have flexible work policies?
-    - What benefits reflect your culture?
-    - How do you support employee growth?
-    - What's the dress code?
-    - Are teams cross-functional?
-    - How often do teams socialize?
-    - Do you have team-building activities?
-    - Company values
-    - Workplace environment
-    - Team dynamics
-    - Work atmosphere
-    - Company philosophy
-    - What makes your company unique?
-    - Cultural attributes
-    - Employee experience
-
-- intent: ask_benefits  
-  examples: |  
-    - What benefits do you offer?  
-    - Do you provide health insurance?  
-    - Is there a retirement plan?  
-    - How many vacation days are there?  
-    - Are there parental leave policies?  
-    - Do you offer stock options?  
-    - What's the WFH policy?  
-    - Is there gym reimbursement?  
-    - Are there education benefits?  
-    - Do you cover relocation costs?  
-    - What wellness programs exist?  
-    - Is there free lunch/snacks?  
-    - Are there commuting benefits?  
-    - What's the bonus structure?  
-    - Do you have profit sharing?  
-    - How often are performance reviews?  
-    - Are there childcare benefits?  
-    - What's the 401k match?  
-    - Do you offer sabbaticals?  
-    - Are there mental health resources?  
-    - What's the dental/vision coverage?  
-    - Is there a signing bonus?  
-    - Do you have unlimited PTO?  
-    - Are there company retreats?  
-    - What's the HSA contribution?  
-    - Retirement plans
-    - Work benefits
-    - What's included in compensation?
-    - Additional job benefits
-    - Salary and benefits
-    - What do employees get?
-
-- intent: ask_job_openings
-  examples: |
-    - What jobs are available?
-    - Are you hiring?
-    - Show me open positions
-    - What roles are open?
-    - List current job openings
-    - What vacancies do you have?
-    - I'm looking for a job
-    - What positions can I apply for?
-    - Do you have any openings?
-    - Are there any jobs in marketing?
-    - What tech roles are open?
-    - Are you recruiting engineers?
-    - Show available jobs
-    - What's hiring right now?
-    - Which departments are hiring?
-    - Do you have remote jobs?
-    - Are there entry-level positions?
-    - What jobs are there for freshers?
-    - Are there managerial roles open?
-    - Do you have part-time jobs?
-    - What internships are available?
-    - Are there any product roles?
-    - Is the [software Enginner](job_title) position open?
-    - is [Engineering](department) hiring?
-    - What are the latest job openings in the [Marketing](department) department?
-    - What's the latest job posting?
-    - Can I see all vacancies?
-    - Current job vacancies
-    - I'm looking for a job
-    - Any open positions?
-    - What opportunities do you have?
-    - Hiring right now?
-    - Job openings?
-
-- intent: ask_job_requirements  
-  examples: |  
-    - What are the qualifications for [software Engineer](job_title)? 
-    - Do I need a degree for [DevOps Engineer](job_title)?
-    - What skills are required for [Data Analyst](job_title)?
-    - requirements for [UX/UI Designer](job_title) position
-    - [Software Engineer](job_title) requirements
-    - What do I need to apply for [Content Writer](job_title)?
-    - qualifications needed for [Financial Analyst](job_title)
-    - What are the must-have skills for [Customer Success Manager](job_title)?
-    - [Operations Manager](job_title) job requirements
-    - What background is needed for [HR Coordinator](job_title)? 
-    - Do I need a degree for this role?  
-    - What skills are required?  
-    - Requirements for the [software Enginner] (job_title)?  
-    - How many years of experience do you need?  
-    - Are there any technical tests?  
-    - What programming languages should I know?  
-    - Do you require a portfolio?  
-    - Is this role entry-level or senior?  
-    - What are the must-have vs nice-to-have skills?  
-    - Will you train someone without experience?  
-    - Are there language requirements?  
-    - Do I need to relocate for this job?  
-    - Qualifications for the position
-    - What do I need to apply?
-    - Experience requirements
-    - Skill set for the job
-    - What makes a good candidate?
-    - Minimum requirements
-    - Preferred skills
-
-- intent: ask_recruitment_process
-  examples: |
-    - How does the hiring process work?
-    - hiring process?
-    - How to get hired?
-    - recruitment steps
-    - recruitment workflow
-    - application steps
-    - hiring workflow
-    - hiring procedure
-    - process to get hired
-    - how are candidates selected
-    - selection process
-    - interview process
-    - hiring timeline
-    - steps to get hired
-    - recruitment stages
-    - how does recruitment work
-    - what's the hiring method
-    - how are applications reviewed
-    - hiring steps
-    - selection method
-    - How does the hiring process work
-    - What's the application process
-    - Steps to apply for a job
-    - How do I get hired at Faith
-    - Walk me through your recruitment
-    - What's your hiring workflow
-    - How long does hiring take
-    - What are the interview stages
-    - How many rounds of interviews
-    - Is there a technical round
-    - Do you do background checks
-    - What assessments are involved
-    - How do you evaluate candidates
-    - What happens after I apply
-    - When will I hear back after applying
-    - Who reviews applications
-    - Do you do phone screens
-    - Is there an HR round
-
-
-- intent: ask_how_to_apply
-  examples: |
-    - How to apply for job ?
-    - application method
-    - how do I apply [software Enginner](job_title)?
-    - steps to apply
-    - apply process
-    - job application steps
-    - how can I apply
-    - way to apply
-    - application procedure
-    - apply for position
-    - How do I submit my application
-    - What is the application process
-    - Can you guide me through applying
-    - Tell me how to apply for a job
-    - What steps do I need to take
-    - How can I submit my resume
-    - What is the application procedure
-    - Can you explain how to apply
-    - What do I need to do to apply
-    - Guide me through the application
-    - How do I start my application
-    - What is required to apply
-    - Can you help me apply
-    - Explain the application method
-    - What are the application steps
-    
-- intent: submit_application_form
-  examples: |
-    - submit my CV
-    - submit my application
-    - submit CV
-    - submit form
-    - submit application
-    - I've completed the form
-    - I'm done filling the form
-    - finished with my application
-    - application complete
-    - CV form complete
-    - submit my details
-    - send my application
-    - process my application
-    - I want to submit now
-
-- intent: ask_application_status
-  examples: |
-    - What's my application status?
-    - Have you reviewed my application?
-    - Did my resume get shortlisted?
-    - Where's my application at?
-    - Status of my job application
-    - Has HR seen my application?
-    - Am I still being considered?
-    - Was my application rejected?
-    - Did I make it to next round?
-    - When will I get an update?
-    - How do I check my status?
-    - Can you tell me if I'm selected?
-    - Is there any progress on my application?
-    - Has a decision been made?
-    - Why haven't I heard back?
-    - Who can I contact about my application?
-    - Can you confirm you received my application?
-    - Was my application complete?
-    - Did all documents get submitted?
-    - Why was my application declined?
-    - When are next steps communicated?
-    - How long until final decision?
-    - Can I get feedback on my application?
-    - Has the hiring manager reviewed me?
-    - What's the delay in my process?
-
-- intent: provide_application_id
-  examples: |
-    - My application ID is [12345](application_id)
-    - Application ID [67890](application_id)
-    - The ID is [54321](application_id)
-    - My ID is [98765](application_id)
-    - Application number [11223](application_id)
-    - ID for my application is [44556](application_id)
-    - Reference number [77889](application_id)
-    - My reference ID is [99000](application_id)
-    - The reference number is [12321](application_id)
-    - My application reference is [45678](application_id)
-    - ID for my application is [89101](application_id)
-    - My application reference number is [23456](application_id)
-    - My application number is [78901](application_id)
-    - My application ID is [34567](application_id)
-
-- intent: ask_interview_scheduling
-  examples: |
-    - I need to schedule an interview
-    - Can we set up an interview?
-    - How do I book my interview?
-    - I'm ready for my interview
-    - Let's schedule the next round
-    - Pick a time for my interview
-    - When can I interview?
-    - Available interview slots
-    - What times work for interviews?
-    - Can we arrange a call?
-    - I want to reschedule my interview
-    - Change my interview time
-    - Need to adjust interview schedule
-    - What's the interview format?
-    - Is the interview virtual or onsite?
-    - Who will interview me?
-    - How long will the interview take?
-    - What should I prepare?
-    - What's the interview structure?
-    - Can I do a morning interview?
-    - Are evening slots available?
-    - Can we do it next week?
-    - Is Friday available for interview?
-    - What's the earliest possible slot?
-    - Can I choose my interviewer?
-
-- intent: technical_support  
-  examples: |  
-    - I can't upload my resume  
-    - The application form crashed  
-    - Error 404 when submitting  
-    - Your portal isn't loading  
-    - The submit button doesn't work  
-    - My file keeps getting rejected  
-    - The captcha won't verify  
-    - I didn't get a confirmation email  
-    - The job link is broken  
-    - Your website says “under maintenance”  
-    - I'm stuck at the login page  
-    - The system logged me out mid-application  
-    - The job description won't display  
-    - My attachments won't save  
-    - The chatbot keeps restarting  
-    - I see duplicate job postings  
-    - The salary filter isn't working  
-    - The calendar won't let me pick dates  
-    - I get a “session expired” message  
-    - The progress bar isn't moving  
-    - The job search returns no results  
-    - The “apply” button is missing  
-    - My profile won't update  
-    - The assessment test won't launch  
-    - I'm getting server errors  
-
-- intent: withdraw_application  
-  examples: |  
-    - I want to withdraw my application  
-    - Please cancel my candidacy  
-    - Remove me from the hiring process  
-    - I'm no longer interested  
-    - Take me out of consideration  
-    - Delete my application  
-    - I've accepted another offer  
-    - Retract my submission  
-    - I need to opt out  
-    - Discontinue my application  
-    - Withdraw for personal reasons  
-    - I changed my mind about this role  
-    - Please stop my hiring process  
-    - Deactivate my application  
-    - I wish to unsubscribe  
-    - Remove me from your system  
-    - Don't move forward with me  
-    - Reject my application on my behalf  
-    - I'm withdrawing due to [reason]  
-    - Cancel my interview schedule  
-    - I've reconsidered this position  
-    - Please disregard my materials  
-    - I need to exit the pipeline  
-    - Terminate my candidacy  
-    - I'm pulling my application  
+    - Hi there
+    - Hello chatbot
 
 - intent: goodbye
   examples: |
     - Bye
     - Goodbye
+    - See you
     - See you later
-    - Thanks for the help
-    - Thank you
-    - I'm done
-    - Exit
-    - Close
-    - End chat
-    - Stop
-    - No more questions
-    - That's all
-    - I appreciate your help
     - Talk to you later
-    - Thanks
-    - Cheers
-    - Take care
     - Have a good day
+    - I'm done
+    - That's all for now
+    - Goodnight
+    - Have a great night
+    - Goodnight, chatbot
+    - Thanks
 
-- intent: default
+- intent: ask_company_culture
   examples: |
-    - I don't understand
-    - I'm not sure
-    - Can you help me understand?
-    - I need some clarification
-    - Please explain more
-    - Can you elaborate?
-    - I'm confused
-    - What do you mean?
-    - Can you order pizza and fries?
-    - I want to book a flight
-    - Can you play music?
-    - What's the weather like?
-    - I need a taxi
-    - Can you recommend a restaurant?
-    - I want to buy a phone
-    - Can you help me with my homework? 
+    - What's the company culture like?
+    - Tell me about your work environment
+    - How would you describe the culture?
+    - What's it like to work there?
+    - Describe the company values
+    - What are your core values?
+    - What's the work culture at Faite?
+
+- intent: ask_benefits
+  examples: |
+    - What benefits do you offer?
+    - Tell me about your benefits package
+    - What perks come with this job?
+    - Do you provide health insurance?
+    - What's included in your benefits?
+    - What employee benefits are available?
+    - What's your benefits policy?
+
+- intent: ask_job_openings
+  examples: |
+    - What jobs are available?
+    - Show me open positions
+    - What are your current vacancies?
+    - Do you have any job openings?
+    - I'm looking for a job
+    - What roles are you hiring for?
+    - Show job vacancies
+    - List available jobs
+
+- intent: ask_job_requirements
+  examples: |
+    - What are the requirements for [DevOps Engineer](job_title) role?
+    - What do I need to apply for [Software Engineer](job_title) job?
+    - What qualifications are needed for [Software Engineer](job_title)?
+    - What are the prerequisites for [DevOps Engineer](job_title)?
+    - What skills are required for  [DevOps Engineer](job_title)?
+    - What experience is needed for [Financial Analyst](job_title)?
+    - What are the job criteria for [Financial Analyst](job_title)?
+    - [Financial Analyst](job_title)
+    - Requirements for [DevOps Engineer](job_title) role?
+    - Search [DevOps Engineer](job_title) role?
+
+- intent: ask_recruitment_process
+  examples: |
+    - How does your hiring process work?
+    - What's the recruitment workflow?
+    - Tell me about your hiring stages
+    - What steps are in your hiring process?
+    - How long does recruitment take?
+    - What's your selection process?
+    - Walk me through your hiring steps
+
+- intent: ask_how_to_apply
+  examples: |
+    - How do I apply?
+    - What's the application process?
+    - How can I submit my application?
+    - Where do I send my resume?
+    - I want to apply for a job
+    - How to submit application?
+    - What are the application steps?
+    - begin application
+
+- intent: submit_application_form
+  examples: |
+    - Here's my application
+    - I'm submitting my application
+    - Application submitted
+    - I've completed the form
+    - Done with the application
+    - Form filled out
+    - Finished applying
+    - /submit_application_form
+
+- intent: ask_application_status
+  examples: |
+    - What's my application status?
+    - Where is my application at?
+    - Has my application been reviewed?
+    - Check my application progress
+    - What stage is my application in?
+    - Status of my application
+    - Update on my job application
+
+- intent: provide_application_id
+  examples: |
+    - My ID is [12345](application_id)
+    - Application ID: [FAITE-2023-456](application_id)
+    - Here's my ID [7890](application_id)
+    - [APP-2023-001](application_id)
+    - The ID is [9876](application_id)
+    - Reference number [6543](application_id)
+
+- intent: start_application_form
+  examples: |
+    - I want to apply now
+    - Start application
+    - Begin the application form
+    - Let me apply
+    - Open application form
+    - I'm ready to apply
+    - Take me to the application
+
+- intent: ask_interview_scheduling
+  examples: |
+    - I need to schedule an interview
+    - Can we set up an interview?
+    - Book an interview slot
+    - Arrange an interview
+    - When can I interview?
+    - Pick interview time
+    - Schedule my interview
+
+- intent: select_interview_slot
+  examples: |
+    - I choose [Monday](date) at [2pm](time)
+    - Slot: [2023-12-15](date) [10:00](time)
+    - I'll take [Friday](date) [afternoon](time)
+    - [Next week](date) [morning](time) works
+    - [December 20](date) at [3:30](time)
+    - [Virtual](inter_type) on [Tuesday](date) [11am](time)
+
+
+- intent: technical_support
+  examples: |
+    - I'm having technical issues
+    - The form isn't working
+    - I need help with the application
+    - Technical problem
+    - Something's not working
+    - Bug report
+    - Website error
+
+
+- intent: out_of_scope
+  examples: |
+    - What's the weather today?
+    - Tell me a joke
+    - How old are you?
+    - Who made you?
+    - What's your favorite color?
+    - Can you sing?
+    - What time is it?
+    - Where do you live?

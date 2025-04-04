@@ -34,24 +34,13 @@ rules:
   - intent: ask_application_status
   - action: utter_ask_application_id
 
-  # Withdrawal Process
-- rule: Process withdrawal with ID
-  condition:
-    - slot_was_set:
-        - application_id
-  steps:
-  - intent: withdraw_application
-  - action: action_withdraw_application
-  - slot_was_set:
-      - application_stage: "withdrawn"
 
-- rule: Request ID for withdrawal
-  condition:
-    - slot_was_set:
-        - application_id: null
+- rule: Handle interview slot selection
   steps:
-  - intent: withdraw_application
-  - action: utter_ask_application_id
+    - intent: select_interview_slot
+    - action: action_select_interview_slot
+
+
 
 
 

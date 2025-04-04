@@ -89,3 +89,39 @@ VALUES
 - Knowledge of containerization and orchestration tools
 - Proficiency in scripting languages and CI/CD pipelines',
 'Remote', '$90,000 - $130,000', 'Full-time');
+
+
+
+INSERT INTO interviews (application_id, interview_date, interview_time, interview_type, interviewer, notes, status)
+VALUES
+    (10000, '2025-04-05', '10:00:00', 'virtual', 'John Doe', 'Initial HR screening.', 'available'),
+    (10000, '2025-04-10', '14:30:00', 'onsite', 'Jane Smith', 'Technical round.', 'available'),
+    (10000, '2025-04-15', '09:00:00', 'virtual', 'Mike Johnson', 'Final interview with CTO.', 'available'),
+
+    (100001, '2025-04-07', '11:00:00', 'virtual', 'Alice Brown', 'HR discussion.', 'available'),
+    (100001, '2025-04-12', '16:00:00', 'onsite', 'Robert Green', 'Technical panel discussion.', 'available'),
+    (100001, '2025-04-18', '10:30:00', 'virtual', 'Emma Wilson', 'Final round.', 'available'),
+
+    (10002, '2025-04-06', '09:45:00', 'virtual', 'Daniel Martinez', 'Phone screening.', 'available'),
+    (10002, '2025-04-11', '13:15:00', 'onsite', 'Sophia Anderson', 'Coding challenge.', 'available'),
+    (10002, '2025-04-17', '15:00:00', 'virtual', 'Christopher Harris', 'Final discussion.', 'available'),
+
+    (10003, '2025-04-05', '14:00:00', 'virtual', 'Olivia Thompson', 'HR screening.', 'available'),
+    (10003, '2025-04-09', '10:45:00', 'onsite', 'William Carter', 'Technical assessment.', 'available'),
+    (10003, '2025-04-14', '11:30:00', 'virtual', 'Isabella Lewis', 'Final interview.', 'available'),
+
+    (10004, '2025-04-08', '08:30:00', 'virtual', 'James Walker', 'Initial discussion.', 'available'),
+    (10004, '2025-04-13', '17:00:00', 'onsite', 'Lucas Hall', 'Skill test.', 'available'),
+    (10004, '2025-04-19', '12:00:00', 'virtual', 'Mia Allen', 'Offer discussion.', 'available'),
+
+    (10005, '2025-04-07', '10:30:00', 'virtual', 'Charlotte Young', 'Recruiter screening.', 'available'),
+    (10005, '2025-04-11', '14:45:00', 'onsite', 'Benjamin Scott', 'Tech interview.', 'available'),
+    (10005, '2025-04-16', '09:15:00', 'virtual', 'Henry Nelson', 'Final discussion.', 'available'),
+
+    (10006, '2025-04-06', '13:00:00', 'virtual', 'Amelia Roberts', 'HR interview.', 'available'),
+    (10006, '2025-04-10', '15:30:00', 'onsite', 'Ethan Phillips', 'Live coding round.', 'available'),
+    (10006, '2025-04-15', '10:00:00', 'virtual', 'Mason Evans', 'Final interview.', 'available'),
+
+    (10007, '2025-04-09', '08:00:00', 'virtual', 'Harper Wright', 'HR screening.', 'available'),
+    (10007, '2025-04-14', '12:45:00', 'onsite', 'Aiden Cooper', 'Technical assessment.', 'available'),
+    (10007, '2025-04-18', '09:30:00', 'virtual', 'Liam Adams', 'Final round.', 'available');

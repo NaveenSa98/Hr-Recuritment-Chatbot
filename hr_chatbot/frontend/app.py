@@ -211,5 +211,76 @@ def submit_application():
             "message": f"Failed to process application: {str(e)}"
         }), 500
     
+
+@app.route('/confirm-interview', methods=['POST'])
+def confirm_interview_endpoint():
+    """
+    Endpoint to confirm an interview directly from the frontend
+    """
+    try:
+        data = request.json
+        interview_id = data.get('interview_id')
+        application_id = data.get('application_id')
+        interview_date = data.get('date')
+        interview_time = data.get('time')
+        
+        if not interview_id or not application_id:
+            return jsonify({
+                'success': False,
+                'message': 'Missing required parameters'
+            }), 400
+        
+        # Log the confirmation attempt
+        print(f"Confirming interview via direct endpoint: interview_id={interview_id}, application_id={application_id}")
+        
+        # Check if the interview is still available
+        interview_details = db_queries.get_interview_details(interview_id)
+        if not interview_details:
+            return jsonify({
+                'success': False,
+                'message': 'Interview not found'
+            }), 404
+            
+        if interview_details.get('status') != 'available':
+            return jsonify({
+                'success': False,
+                'message': 'This interview slot is no longer available. Please select another slot.'
+            }), 400
+        
+        # Update the database
+        success = db_queries.confirm_interview(interview_id, application_id)
+        
+        if not success:
+            return jsonify({
+                'success': False,
+                'message': 'Failed to confirm interview'
+            }), 500
+        
+        # Get candidate email for the response
+        application_info = db_queries.get_application_status(application_id)
+        candidate_email = application_info.get("email", "") if application_info else ""
+        
+        # Create confirmation message
+        confirmation_message = (
+            f"Your interview has been successfully scheduled for {interview_date} at {interview_time}. "
+            f"A confirmation email has been sent to {candidate_email}. "
+            f"Please make sure to prepare for your interview and be on time. "
+            f"If you need to reschedule, please contact our HR team at least 24 hours before your scheduled interview."
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': confirmation_message
+        })
+    
+    except Exception as e:
+        print(f"Error in confirm-interview endpoint: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'An error occurred: {str(e)}'
+        }), 500
+
+
+    
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

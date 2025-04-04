@@ -3,7 +3,7 @@ version: "3.1"
 stories:
 
 # Basic Interaction Flow
-- story: greet and explore
+- story: greet and explore company info
   steps:
   - intent: greet
   - action: utter_greet
@@ -11,12 +11,6 @@ stories:
   - action: utter_company_culture
   - intent: ask_benefits
   - action: utter_benefits
-  - intent: ask_job_openings
-  - action: action_fetch_jobs
-  - intent: ask_recruitment_process
-  - action: utter_recruitment_process
-  - intent: ask_how_to_apply
-  - action: utter_how_to_apply
   - intent: goodbye
   - action: utter_goodbye
 
@@ -28,14 +22,13 @@ stories:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
+    entities:
+      - job_title: "Content Writer"
   - action: action_check_requirements
   - intent: start_application_form
   - action: action_show_application_form
   - intent: submit_application_form
-  - action: action_process_application
   - action: utter_application_submitted
-  - intent: ask_recruitment_process
-  - action: utter_recruitment_process
   - intent: goodbye
   - action: utter_goodbye
 
@@ -48,71 +41,66 @@ stories:
   - action: utter_ask_application_id
   - intent: provide_application_id
     entities:
-    - application_id: "12345" 
+      - application_id: "12345"
   - action: action_check_status
   - action: utter_application_status
-  - intent: ask_interview_scheduling
-  - action: utter_interview_scheduling
-  - action: action_schedule_interview
+  - intent: goodbye
+  - action: utter_goodbye
 
 # Interview Scheduling Flow
-- story: schedule interview
+- story: successful interview scheduling
   steps:
   - intent: ask_interview_scheduling
   - action: utter_interview_scheduling
-  - intent: affirm
+  - intent: provide_application_id
+    entities:
+      - application_id: "12345"
   - action: action_schedule_interview
-  - action: utter_confirm_interview
+  - intent: select_interview_slot
+    entities:
+      - date: "Monday"
+      - time: "2pm"
+      - application_id: "12345"
+  - action: action_select_interview_slot
+
+
+
 
 # Technical Support Scenario
 - story: handle technical issue
   steps:
   - intent: technical_support
   - action: utter_technical_support
-  - intent: affirm
-  - action: action_escalate_technical_issue
-
-# Application Withdrawal Process
-- story: application withdrawal
-  steps:
-  - intent: withdraw_application
-  - action: utter_ask_application_id
-  - intent: provide_application_id
-  - action: action_withdraw_application
-  - action: utter_withdraw_application
+  - intent: goodbye
+  - action: utter_goodbye
 
 
 # Fallback Scenario
-- story: handle default
+- story: handle out of scope
   steps:
-  - intent: default
+  - intent: out_of_scope
   - action: utter_default
-  - intent: affirm
-  - action: action_transfer_to_hr
+  - intent: goodbye
+  - action: utter_goodbye
 
-# Comprehensive Job Search
-- story: comprehensive job search
+# Job Requirements Inquiry
+- story: inquire about job requirements
   steps:
   - intent: ask_job_openings
   - action: action_fetch_jobs
   - intent: ask_job_requirements
+    entities:
+      - job_title: "Product Manager"
   - action: action_check_requirements
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Recruitment Process Inquiry
+- story: ask about hiring process
+  steps:
   - intent: ask_recruitment_process
   - action: utter_recruitment_process
-
-  
-# CV Application Form Flow
-- story: cv application form submission
-  steps:
   - intent: ask_how_to_apply
   - action: utter_how_to_apply
-  - intent: ask_job_openings
-  - action: action_fetch_jobs
-  - intent: ask_job_requirements
-  - action: action_check_requirements
-  - intent: start_application_form
-  - action: action_show_application_form
-  - intent: submit_application_form
-  - action: action_process_application
-  - action: utter_application_submitted
-
+  - intent: goodbye
+  - action: utter_goodbye

@@ -1,30 +1,39 @@
 version: "3.1"
 
 intents:
+   # Basic conversation
   - greet
   - goodbye
+  - out_of_scope
 
+
+# Company information
   - ask_company_culture
   - ask_benefits
 
+# Application process
   - ask_job_openings
   - ask_job_requirements
   - ask_recruitment_process
   - ask_how_to_apply
+  - start_application_form
   - submit_application_form
   - ask_application_status
   - provide_application_id
-  - start_application_form
+  
 
+
+  # Interview management
   - ask_interview_scheduling
+  - select_interview_slot
 
+
+
+   # Support
   - technical_support
-  - withdraw_application
-  - default
-  - out_of_scope
-  - affirm
 
 entities:
+# Personal information
   - first_name
   - last_name
   - email
@@ -32,152 +41,122 @@ entities:
   - education
   - resume
 
+# Job information
   - job_title
-  - department
 
+
+# Interview details
   - date
   - time
   - inter_type
+  - interview_id
 
+# Application tracking
   - application_id
   
-
+# Technical
   - issue_type  
 
 slots:
+# Personal information slots
   first_name:
     type: text
-    initial_value: null
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: first_name
 
-
   last_name:
     type: text
-    initial_value: null
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: last_name
 
-
   email:
     type: text
-    initial_value: null
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: email
 
-
   phone:
     type: text
-    initial_value: null
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: phone_number
 
-
+ # Job-related slots
   job_title:
     type: text
     influence_conversation: true
-    initial_value: null
     mappings:
       - type: from_entity
         entity: job_title
 
-
   education:
     type: text
-    initial_value: null
     mappings:
       - type: from_entity
         entity: education
 
-
   resume:
     type: text
-    initial_value: null
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: resume
 
-
-
-
+# Application tracking
   application_id:
     type: text
-    initial_value: null
     mappings:
       - type: from_entity
         entity: application_id
-        
-
-
-  department:
-    type: categorical
-    values:
-      - engineering
-      - marketing
-      - hr
-      - operations
-    initial_value: null
-    influence_conversation: true
-    mappings:
-      - type: from_entity
-        entity: department
-
 
   application_stage:
     type: categorical
-    values:
-      - not_started
-      - resume_uploaded
-      - form_completed
-      - under_review
-      - interview_scheduled
-      - withdrawn
-    initial_value: not_started
+    values: [under_review, shortlisted, withdrawn]
+    initial_value:  under_review
     influence_conversation: true
     mappings:
       - type: custom
 
 
+  
+# Interview scheduling
   interview_date:
     type: text
-    initial_value: null
     mappings:
       - type: from_entity
         entity: date
 
-
-
-
   interview_time:
     type: text
-    initial_value: null
     mappings:
       - type: from_entity
         entity: time
 
   interview_type:
     type: categorical
-    values:
-      - virtual
-      - onsite
+    values: [virtual, onsite]
     initial_value: virtual
     mappings:
       - type: from_entity
         entity: inter_type
 
+  interview_id:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: interview_id
 
+
+
+# Technical
   technical_issue:
     type: text
-    initial_value: null
     mappings:
       - type: from_entity
         entity: issue_type
@@ -185,89 +164,69 @@ slots:
 
 responses:
   utter_greet:
-    - text: "Hello! 👋 Welcome to Faite's career portal. How can I help you with your job search today?"
-    - text: "Hi there! I'm your AI career assistant at Faith. What can I do for you?"
-    - text: "Greetings! Ready to explore exciting career opportunities at Faite?"
+    - text: "Hello! 👋 Welcome to our career portal. How can I help you with your job search today?"
 
   utter_goodbye:
     - text: "Thank you for visiting Faite's career portal. Wishing you the best in your job search! 🍀"
     - text: "Goodbye! Feel free to return if you have any more questions about careers at Faite."
-    - text: "Take care! We hope to see you again soon in your career journey."
 
   utter_default:
     - text: "I'm not quite sure I understand. Could you rephrase that or contact our HR team at hr@faite.com or Call 011-xxxx?"
-    - text: "I'm afraid I couldn't process your request. Would you like to speak with a human recruiter? Call 011-xxxx"
     - text: "I'm having trouble understanding your request. Can you be more specific?"
 
   utter_company_culture:
-     - text: "At Faith, we've built a culture that blends innovation with genuine care for our team. Here's what makes us unique:\n\n✨ **Our Core Values**:\n- **Collaboration First**: Cross-functional teamwork is in our DNA\n- **Continuous Learning**: $5,000 annual education stipend\n- **Work-Life Harmony**: Flexible hours and remote options\n- **Transparent Leadership**: Monthly AMA sessions with executives\n\n🌱 **Growth Opportunities**:\n- Mentorship programs pairing juniors with VPs\n- Quarterly \"Innovation Days\" to work on passion projects\n- Clear promotion paths with bi-annual reviews\n\n🏆 **Recognition**:\n- Peer-nominated awards with cash bonuses\n- Annual company-wide retreat to celebrate wins\n- \"Thank You\" Thursdays for team shoutouts"
+     - text: "At Faith, we've built a culture that blends innovation with genuine care for our team. Here's what makes us unique:\n\n **Our Core Values**:\n- **Collaboration First**: Cross-functional teamwork is in our DNA\n- **Continuous Learning**: $5,000 annual education stipend\n- **Work-Life Harmony**: Flexible hours and remote options\n- **Transparent Leadership**: Monthly AMA sessions with executives\n\n **Growth Opportunities**:\n- Mentorship programs pairing juniors with VPs\n- Quarterly \"Innovation Days\" to work on passion projects\n- Clear promotion paths with bi-annual reviews\n\n**Recognition**:\n- Peer-nominated awards with cash bonuses\n- Annual company-wide retreat to celebrate wins\n- \"Thank You\" Thursdays for team shoutouts"
      - text: "Faith's culture is best described as 'ambitious yet human' - we drive results while valuing each team member.\n\n**Day-to-Day Environment**:\n- Open office layout with focus pods\n- Casual dress code (be yourself!)\n- Pet-friendly workplaces\n- Monthly team outings (from escape rooms to volunteering)\n\n**Inclusion & Diversity**:\n- 8 Employee Resource Groups (Women in Tech, Pride Alliance, etc.)\n- Unconscious bias training for all hiring managers\n- Multilingual workplace with 14 languages spoken\n\n**Leadership Philosophy**:\n- 'Servant leadership' model\n- 360-degree feedback for all managers\n- Open-door policy at all levels"
 
   utter_benefits:
-    - text: "Our 'Whole You' benefits package supports every aspect of your life:\n\n💼 **Career Growth**:\n- $/year tuition reimbursement\n- Conference attendance (Domestic + International)\n- Promotion-based stock grants\n\n🏥 **Health & Wellness**:\n- Premium medical/dental/vision (90% company-paid)\n- Mental health coverage (20 therapy sessions/year)\n- Onsite gyms + $500 fitness reimbursement\n- Nutritionist consultations\n\n🏖 **Time Off**:\n- Unlimited PTO (with 15-day minimum usage)\n- 16 weeks parental leave (gender-neutral)\n- 4-week paid sabbatical every 5 years\n\n💰 **Financial**:\n- 401(k) with 6% company match\n- Student loan repayment ($200/month)\n- Financial planning services\n- Performance bonuses (up to 20% of salary)\n\n🍎 **Perks**:\n- Daily catered lunches + snack bars\n- Commuter benefits ($300/month)\n- Company-sponsored vacations (at milestone years)\n- 'Faith Fund' - $2,000/year for personal development\n\nWhich benefits would you like more details on?"
+    - text: "Our 'Whole You' benefits package supports every aspect of your life:\n\n💼 **Career Growth**:\n- $/year tuition reimbursement\n- Conference attendance (Domestic + International)\n- Promotion-based stock grants\n\n🏥 **Health & Wellness**:\n- Premium medical/dental/vision (90% company-paid)\n- Mental health coverage (20 therapy sessions/year)\n- Onsite gyms + $500 fitness reimbursement\n- Nutritionist consultations\n\n🏖 **Time Off**:\n- Unlimited PTO (with 15-day minimum usage)\n- 16 weeks parental leave (gender-neutral)\n- 4-week paid sabbatical every 5 years\n\n💰 **Financial**:\n- 401(k) with 6% company match\n- Student loan repayment ($200/month)\n- Financial planning services\n- Performance bonuses (up to 20% of salary)\n\n🍎 **Perks**:\n- Daily catered lunches + snack bars\n- Commuter benefits ($300/month)\n- Company-sponsored vacations (at milestone years)\n- 'Faith Fund' - $2,000/year for personal development"
     - text: "We design our benefits to evolve with your life stages:\n\n**For New Hires**:\n- $5,000 relocation assistance\n- 30-day 'Buddy Program'\n- Signing bonus (role-dependent)\n\n**For Families**:\n- $10,000 fertility/adoption assistance\n- Backup childcare ($100/day credit)\n- College savings plan matching\n\n**For Seasoned Team Members**:\n- Executive coaching\n- Board placement opportunities\n- Angel investing training\n\n**Retirement Transition**:\n- Phased retirement options\n- 401(k) to IRA rollover assistance\n- Alumni network access\n\nAll benefits begin Day 1 - no waiting periods!"
 
   utter_recruitment_process:
-    - text: "Our recruitment process: 1) Resume review 2)screening 3) Technical assessment 4) Final interview."
-    - text: "After applying for roles, recruitment process:, you'll go through these stages: application review, interviews (2-3 rounds), and reference checks."
+    - text: "Our recruitment process: 1) Resume review 2) Screening 3) Technical assessment 4) Final interview."
+    - text: "After applying for roles, you'll go through these stages: application review, interviews (2-3 rounds), and reference checks."
 
   utter_how_to_apply:
-    - text: "To apply for job, follow these steps: 1) Select your desired role 2) Complete the online application form 3) Submit!.You can check our current available positions by typing job vacancies or applying for a job by typing 'begin application"
-    - text: "Our application process is simple: Choose a job, fill out the form, upload your resume, and submit!. you can check our current available positions by typing job openings or applying for a job by typing 'begin application?"
-    - text: "Go through our website carrer page & select the appropriate job. Fill out the application form, upload your resume, and submit it!.you can check our current available positions by typing job openings or applying for a job by typing 'begin application?"
+    - text: "To apply for a job: 1) Select your desired role 2) Complete the online application form 3) Submit! Check current positions by typing 'job vacancies' or begin application by typing 'start application'."
 
   utter_application_status:
-    - text: "Your application for {job_title} is currently in the '{application_stage}' stage."
+    - text: "Your application for {job_title} is current stage: '{application_stage}'."
     - text: "Current status of your application: {application_stage}"
-
-  utter_interview_scheduling:
-    - text: "We have several interview slots available. Let's find the best time for you."
-    - text: "Interview scheduling is flexible. When would you be available?"
 
   utter_ask_application_id:
     - text: "Could you provide your application ID to help me locate your application?"
     - text: "I'll need your unique application ID to check its status."
 
-  utter_confirm_interview:
-    - text: "Your interview is confirmed for {interview_date} at {interview_time} in {interview_type}. An email confirmation will be sent to {candidate_email}."
-    - text: "Interview details have been recorded. We look forward to meeting you!"
+  utter_interview_scheduling:
+    - text: "To schedule an interview, I first need to check if your application has been shortlisted. Please provide your application ID."
+    - text: "Interview scheduling is available for shortlisted candidates. Please provide your application ID to check your eligibility."
 
   utter_technical_support:
-    - text: "We're sorry you're experiencing a technical issue. Our support team will investigate and contact you shortly."
-    - text: "Technical difficulties detected. We'll work on resolving this promptly."
-
-  utter_withdraw_application:
-    - text: "Your application for {job_title} has been withdrawn as requested."
-    - text: "Application withdrawal processed. You may reapply in the future if interested."
+    - text: "We're sorry you're experiencing technical issues. Vist our xxx@com website."
 
   utter_application_submitted:
-    - text: "Thank you for submitting your application !!!!. Your application has been received and is now under review. Your application ID is {application_id}. Please save this ID for future reference when checking your application status."
-    - text: "Application successfully submitted! We appreciate your interest in joining our team. Your application ID is {application_id}. Our hiring team will review your application and get back to you soon."
-  
+    - text: "Thank you for submitting your application! Your application ID is {application_id}. Please save this ID for future reference."
+    - text: "Application successfully submitted! Your application ID is {application_id}. Our hiring team will review your application soon."
 
       
 actions:
-
+# Application process
   - action_fetch_jobs
   - action_check_requirements
   - action_show_application_form
   - action_check_status
-  - action_process_application 
 
+
+# Interview management
+  - action_select_interview_slot
   - action_schedule_interview
-  - action_withdraw_application
+  - action_confirm_interview
 
+
+# Support
   - action_escalate_technical_issue
-  - action_transfer_to_hr
 
-
-forms:
-  interview_scheduling_form:
-    required_slots:
-      - interview_date
-      - interview_time
-      - interview_type
 
 session_config:
   session_expiration_time: 60
-  carry_over_slots_to_new_session: true
+  carry_over_slots_to_new_session: false
