@@ -400,16 +400,45 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const data = await response.json()
       console.log("Submit application response:", data)
-      // Remove form from chat
+
+ 
       form.parentElement.remove()
+
       const applicationId = data.application_id;
-      await sendMessageToRasa(`/submit_application_form{"application_id":"${applicationId}"}`);
-      await sendMessageToRasa({
-        intent: "submit_application_form",
-        entities: {
-          application_id: applicationId
+
+      showTypingIndicator()
+
+      try {
+        const processResponse = await fetch("/process-application", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            application_id: applicationId,
+          }),
+        })
+        const processData = await processResponse.json()
+
+        removeTypingIndicator()
+
+        if (!processResponse.ok) {
+          throw new Error(processData.message || "Failed to process application")
         }
-      });
+
+        addMessage(processData.message, "bot")
+
+
+      }catch (processError) {
+        console.error("Error processing application:", processError)
+        removeTypingIndicator()
+        addMessage(
+          processError.message || "Sorry, I encountered an error processing your application. Please try again.",
+          "bot",
+        )
+      }
+
+      
     } catch (error) {
       console.error("Error submitting form:", error)
       addMessage(`There was an error submitting your application: ${error.message}. Please try again.`, "bot")

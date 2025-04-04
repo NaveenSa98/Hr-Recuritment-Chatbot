@@ -106,7 +106,7 @@ def webhook():
 @app.route('/submit-application', methods=['POST'])
 def submit_application():
     try:
-        # Process form data with new fields
+        
         first_name = request.form.get('firstName', '').strip()
         last_name = request.form.get('lastName', '').strip()
         email = request.form.get('email', '').strip()
@@ -114,7 +114,7 @@ def submit_application():
         education = request.form.get('education', '').strip()
         position = request.form.get('position', '').strip()
         
-        # Debug log received form data
+       
         logger.info(f"Received form data: first_name={first_name}, last_name={last_name}, "
                     f"email={email}, phone={phone}, education={education}, position={position}")
         
@@ -209,6 +209,51 @@ def submit_application():
         return jsonify({
             "success": False,
             "message": f"Failed to process application: {str(e)}"
+        }), 500
+    
+@app.route('/process-application', methods=['POST'])
+def process_application_endpoint():
+    """
+    Endpoint to process application submission and return confirmation
+    """
+    try:
+        data = request.json
+        application_id = data.get('application_id')
+        
+        if not application_id:
+            return jsonify({
+                'success': False,
+                'message': 'Missing application ID'
+            }), 400
+        
+        # Log the processing attempt
+        logger.info(f"Processing application via direct endpoint: application_id={application_id}")
+        
+        # Check if the application exists
+        application = db_queries.get_application_by_id(application_id)
+        if not application:
+            return jsonify({
+                'success': False,
+                'message': 'Application not found'
+            }), 404
+        
+        # Create confirmation message
+        confirmation_message = (
+            f"Thank you for submitting your application! Your application ID is {application_id}. "
+            f"Please save this ID for future reference. You can use it to check your application status later."
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': confirmation_message,
+            'application_id': application_id
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in process-application endpoint: {e}")
+        return jsonify({
+            'success': False,
+            'message': f'An error occurred: {str(e)}'
         }), 500
     
 

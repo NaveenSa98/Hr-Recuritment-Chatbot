@@ -7,13 +7,14 @@ from psycopg2.extras import RealDictCursor
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta, date
 
-# Determine the project root directory
+
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-# Load environment variables
+
 load_dotenv()
 
+# database connection
 def connect_to_db():
     """
     Establish a connection to the PostgreSQL database.
@@ -34,6 +35,7 @@ def connect_to_db():
         print(f"Error connecting to database: {e}")
         return None
 
+# Fetch all job openings
 def get_all_jobs_openings(active_only=True):
     """Fetch all jobs, optionally filtering for active jobs only"""
     conn = connect_to_db() 
@@ -61,6 +63,7 @@ def get_all_jobs_openings(active_only=True):
             cursor.close()
             conn.close()
 
+# Fetch jobs by department
 def get_jobs_by_department(department, active_only=True):
     """Fetch jobs filtered by department and return formatted details for chatbot"""
     conn = connect_to_db()
@@ -105,6 +108,8 @@ Job Type: {job[7]}
             cursor.close()
             conn.close()
 
+
+# Fetch job details by title
 def get_job_requirements(title):
     """Fetch key job details needed for chatbot"""
     conn = connect_to_db()
@@ -146,6 +151,8 @@ def get_job_requirements(title):
             cursor.close()
             conn.close()
 
+
+# Save resume 
 def save_resume_file(resume_file):
     """
     Save the uploaded resume file to a specified directory.
@@ -170,6 +177,7 @@ def save_resume_file(resume_file):
         print(f"Error saving resume file: {e}")
         return None
 
+# Insert candidate information into the database
 def insert_candidate_info(first_name, last_name, email, phone, position, education, resume_path):
     """
     Insert candidate information into the database.
@@ -198,6 +206,9 @@ def insert_candidate_info(first_name, last_name, email, phone, position, educati
         if conn:
             cursor.close()
             conn.close()
+
+
+# Create a new application record linking a candidate to a job            
 def create_application(candidate_id, job_id):
     """
     Create a new application record linking a candidate to a job
@@ -210,7 +221,7 @@ def create_application(candidate_id, job_id):
     try:
         cur = conn.cursor()
         
-        # Let the database generate the application_id automatically
+      
         cur.execute("""
             INSERT INTO applications (candidate_id, job_id, status, applied_at, last_updated)
             VALUES (%s, %s, ' under_review', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
@@ -221,7 +232,7 @@ def create_application(candidate_id, job_id):
         conn.commit()
         
         if result:
-            return result[0]  # Return the application_id
+            return result[0] 
         return None
         
     except Exception as e:
@@ -235,6 +246,7 @@ def create_application(candidate_id, job_id):
             conn.close()
 
 
+# Fetch job ID by title
 def get_job_id_by_title(title):
     conn = connect_to_db()
     if not conn:
@@ -258,10 +270,10 @@ def get_job_id_by_title(title):
             cur.close()
             conn.close()
 
+#  Fetch application details by application ID
 def get_application_by_id(application_id):
     """
     Fetch application details by application ID.
-
     """
     conn = connect_to_db()
     if not conn:
@@ -270,13 +282,23 @@ def get_application_by_id(application_id):
     try:
         cur = conn.cursor()
         cur.execute("""
-            SELECT status, application_id
-            FROM applications
-            WHERE application_id = %s
+            SELECT a.application_id, a.status, j.title, c.first_name, c.last_name, c.email
+            FROM applications a
+            JOIN jobs j ON a.job_id = j.job_id
+            JOIN candidates c ON a.candidate_id = c.candidate_id
+            WHERE a.application_id = %s
         """, (application_id,))
         
         result = cur.fetchone()
-        return result if result else None
+        if result:
+            return {
+                "application_id": result[0],
+                "status": result[1],
+                "job_title": result[2],
+                "candidate_name": f"{result[3]} {result[4]}",
+                "email": result[5]
+            }
+        return None
     except Exception as e:
         print(f"Error getting application details: {e}")
         return None
@@ -285,7 +307,7 @@ def get_application_by_id(application_id):
             cur.close()
             conn.close()
 
-
+# Update application status
 def get_application_status(application_id):
     """
     Get the status of an application
@@ -321,6 +343,7 @@ def get_application_status(application_id):
             cur.close()
             conn.close()
 
+# Get available interview slots for an application
 def get_available_interview_slots(application_id):
     """
     Get available interview slots for an application
@@ -374,6 +397,8 @@ def get_available_interview_slots(application_id):
             cur.close()
             conn.close()
 
+
+# Get interview details by interview ID
 def get_interview_details(interview_id):
     """
     Get details for a specific interview slot
@@ -418,6 +443,7 @@ def get_interview_details(interview_id):
 
 
 
+# Confirm an interview by updating its status
 def confirm_interview(interview_id, application_id):
     """
     Confirm an interview by updating its status to 'scheduled'
@@ -475,6 +501,50 @@ def confirm_interview(interview_id, application_id):
         conn.rollback()
         print(f"Error confirming interview: {e}")
         return False
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+
+# Get scheduled interview for an application
+def get_scheduled_interview(application_id):
+    """
+    Get the scheduled interview for an application
+    """
+    conn = connect_to_db()
+    if not conn:
+        return None
+    
+    try:
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("""
+            SELECT interview_id, interview_date, interview_time, interview_type, interviewer, status, notes
+            FROM interviews
+            WHERE application_id = %s AND status = 'scheduled'
+            ORDER BY interview_date, interview_time
+            LIMIT 1
+        """, (application_id,))
+        
+        result = cur.fetchone()
+        
+        if result:
+           
+            if 'interview_date' in result:
+                if isinstance(result['interview_date'], datetime) or isinstance(result['interview_date'], date):
+                    result['interview_date'] = result['interview_date'].strftime('%Y-%m-%d')
+            
+           
+            if 'interview_time' in result and hasattr(result['interview_time'], 'strftime'):
+                result['interview_time'] = result['interview_time'].strftime('%H:%M:%S')
+                
+          
+            if 'interview_id' in result and hasattr(result['interview_id'], 'hex'):
+                result['interview_id'] = str(result['interview_id'])
+                
+        return result
+    except Exception as e:
+        print(f"Error fetching scheduled interview: {e}")
+        return None
     finally:
         if conn:
             cur.close()

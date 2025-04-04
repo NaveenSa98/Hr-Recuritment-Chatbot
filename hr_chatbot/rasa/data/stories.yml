@@ -27,8 +27,6 @@ stories:
   - action: action_check_requirements
   - intent: start_application_form
   - action: action_show_application_form
-  - intent: submit_application_form
-  - action: utter_application_submitted
   - intent: goodbye
   - action: utter_goodbye
 

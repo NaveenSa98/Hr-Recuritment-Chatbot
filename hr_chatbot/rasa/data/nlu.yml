@@ -92,17 +92,6 @@ nlu:
     - What are the application steps?
     - begin application
 
-- intent: submit_application_form
-  examples: |
-    - Here's my application
-    - I'm submitting my application
-    - Application submitted
-    - I've completed the form
-    - Done with the application
-    - Form filled out
-    - Finished applying
-    - /submit_application_form
-
 - intent: ask_application_status
   examples: |
     - What's my application status?

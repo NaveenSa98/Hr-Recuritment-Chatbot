@@ -17,7 +17,6 @@ rules:
   - intent: ask_benefits
   - action: utter_benefits
 
-# Status Checks
 - rule: Provide status when ID exists
   condition:
     - slot_was_set:
@@ -39,6 +38,11 @@ rules:
   steps:
     - intent: select_interview_slot
     - action: action_select_interview_slot
+
+- rule: Process application after submission
+  steps:
+    - action: action_application_process
+
 
 
 
