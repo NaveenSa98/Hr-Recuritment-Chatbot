@@ -17,12 +17,11 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 
 from database.queries import (
-    get_all_jobs_openings, 
+    get_all_jobs_as_list, 
     get_jobs_by_department, 
     get_job_requirements,
 )
 
-# Fetching job openings and requirements
 class ActionFetchJobs(Action):
     def name(self) -> Text:
         """Unique identifier for the action."""
@@ -43,7 +42,7 @@ class ActionFetchJobs(Action):
         
         try:
             if department:
-                
+                # Fetch jobs for specific department
                 jobs = get_jobs_by_department(department)
                 
                 if jobs:
@@ -51,12 +50,24 @@ class ActionFetchJobs(Action):
                 else:
                     dispatcher.utter_message(f"Sorry, no open positions found in the {department} department.")
             else:
+                # Fetch all jobs
+                job_list = get_all_jobs_as_list()
                 
-                jobs = get_all_jobs_openings()
-                
-                if jobs:
-                    response = "Current Job Openings:\n" + jobs
-                    dispatcher.utter_message(response)
+                if job_list:
+                    # First, send an intro message
+                    dispatcher.utter_message("Current Job Openings:")
+                    
+                    # Then send buttons for each job
+                    buttons = []
+                    for job_title in job_list:
+                        # Create a button for each job with payload to trigger job requirements
+                        buttons.append({
+                            "title": job_title,
+                            "payload": f"/ask_job_requirements{{\"job_title\":\"{job_title}\"}}"
+                        })
+                    
+                    # Send buttons as a separate message
+                    dispatcher.utter_message(buttons=buttons)
                 else:
                     dispatcher.utter_message("Sorry, no job openings are currently available.")
         
@@ -287,6 +298,12 @@ class ActionCheckStatus(Action):
         # Update slots
         job_title = application_info["job_title"]
         status = application_info["status"]
+
+        if status.lower() == "shortlisted":
+            dispatcher.utter_message(text=f"Congratulations! Your application for {job_title} has been shortlisted. To continue the process, please schedule your interview at your earliest convenience.")
+        else:
+            # Handle other statuses
+            dispatcher.utter_message(text=f"Your application for {job_title} is currently at stage: '{status}'.")
         
         return [
             SlotSet("job_title", job_title),

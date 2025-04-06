@@ -41,7 +41,6 @@ stories:
     entities:
       - application_id: "12345"
   - action: action_check_status
-  - action: utter_application_status
   - intent: goodbye
   - action: utter_goodbye
 

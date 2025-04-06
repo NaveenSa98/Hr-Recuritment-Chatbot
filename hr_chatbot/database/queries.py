@@ -35,9 +35,9 @@ def connect_to_db():
         print(f"Error connecting to database: {e}")
         return None
 
-# Fetch all job openings
-def get_all_jobs_openings(active_only=True):
-    """Fetch all jobs, optionally filtering for active jobs only"""
+# Fetch all job openings as a list (new function)
+def get_all_jobs_as_list(active_only=True):
+    """Fetch all jobs as a list, optionally filtering for active jobs only"""
     conn = connect_to_db() 
     if not conn:
         return []
@@ -51,10 +51,8 @@ def get_all_jobs_openings(active_only=True):
         
         cursor.execute(query)
         titles = [row[0] for row in cursor.fetchall()] 
-    
-        formatted_output = "\n".join(f"- {title}" for title in titles)
         
-        return formatted_output 
+        return titles
     except Exception as e:
         print(f"Error fetching jobs: {e}")
         return []

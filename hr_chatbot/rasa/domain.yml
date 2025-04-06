@@ -188,10 +188,6 @@ responses:
   utter_how_to_apply:
     - text: "To apply for a job: 1) Select your desired role 2) Complete the online application form 3) Submit! Check current positions by typing 'job vacancies' or begin application by typing 'start application'."
 
-  utter_application_status:
-    - text: "Your application for {job_title} is current stage: '{application_stage}'."
-    - text: "Current status of your application: {application_stage}"
-
   utter_ask_application_id:
     - text: "Could you provide your application ID to help me locate your application?"
     - text: "I'll need your unique application ID to check its status."
