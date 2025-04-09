@@ -1,0 +1,36 @@
+[
+  {
+    "tag_name": "entity",
+    "ids_to_tags": {
+      "1": "B-application_id",
+      "2": "I-application_id",
+      "3": "L-application_id",
+      "4": "U-application_id",
+      "5": "B-department",
+      "6": "I-department",
+      "7": "L-department",
+      "8": "U-department",
+      "9": "B-job_title",
+      "10": "I-job_title",
+      "11": "L-job_title",
+      "12": "U-job_title",
+      "0": "O"
+    },
+    "tags_to_ids": {
+      "B-application_id": 1,
+      "I-application_id": 2,
+      "L-application_id": 3,
+      "U-application_id": 4,
+      "B-department": 5,
+      "I-department": 6,
+      "L-department": 7,
+      "U-department": 8,
+      "B-job_title": 9,
+      "I-job_title": 10,
+      "L-job_title": 11,
+      "U-job_title": 12,
+      "O": 0
+    },
+    "num_tags": 13
+  }
+]

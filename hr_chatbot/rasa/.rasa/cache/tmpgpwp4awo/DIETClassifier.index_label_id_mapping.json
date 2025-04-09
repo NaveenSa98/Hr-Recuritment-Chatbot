@@ -1,0 +1,17 @@
+{
+  "0": "ask_application_status",
+  "1": "ask_benefits",
+  "2": "ask_company_culture",
+  "3": "ask_how_to_apply",
+  "4": "ask_interview_scheduling",
+  "5": "ask_job_openings",
+  "6": "ask_job_requirements",
+  "7": "ask_recruitment_process",
+  "8": "goodbye",
+  "9": "greet",
+  "10": "out_of_scope",
+  "11": "provide_application_id",
+  "12": "select_interview_slot",
+  "13": "start_application_form",
+  "14": "technical_support"
+}
