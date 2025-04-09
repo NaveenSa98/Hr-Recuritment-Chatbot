@@ -5,6 +5,7 @@ from database import queries as db_queries
 from typing import Any, Text, Dict, List
 from datetime import datetime
 import logging
+import json
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
@@ -20,8 +21,10 @@ from database.queries import (
     get_all_jobs_as_list, 
     get_jobs_by_department, 
     get_job_requirements,
+    get_resume_details_by_email,
+    get_job_openings_by_field
 )
-
+# fetch job openings
 class ActionFetchJobs(Action):
     def name(self) -> Text:
         """Unique identifier for the action."""
@@ -509,17 +512,17 @@ class ActionSelectInterviewSlot(Action):
         dispatcher.utter_message(json_message={"interview_details": interview_payload})
 
          
-        buttons = [
+        # buttons = [
            
-            {
-                "title": "Select a different slot",
-                "payload": f'/ask_interview_scheduling{{"application_id":"{application_id}"}}'
-            }
-        ]
+        #     {
+        #         "title": "Select a different slot",
+        #         "payload": f'/ask_interview_scheduling{{"application_id":"{application_id}"}}'
+        #     }
+        # ]
         
-        dispatcher.utter_message(
-            buttons=buttons
-        )
+        # dispatcher.utter_message(
+        #     buttons=buttons
+        # )
         
         
         
@@ -583,3 +586,175 @@ class ActionConfirmInterview(Action):
         return [
             SlotSet("application_stage", "interview_scheduled")
         ]
+
+# Action to show resume parsing results
+class ActionShowParseResume(Action):
+    def name(self) -> Text:
+        return "action_show_parse_resume"
+
+    def generate_score_bar(self, score):
+        """Helper function to create a visual progress bar"""
+        filled = '█' * int(score/10)
+        empty = '░' * (10 - int(score/10))
+        return f"[{filled}{empty}]"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+       
+        email = tracker.get_slot("email")
+
+        
+        if not email:
+            dispatcher.utter_message(text="I couldn't find your email. Please provide your email address.")
+            return []
+        
+       
+        resume_details = get_resume_details_by_email(email)
+
+        
+        if not resume_details:
+            dispatcher.utter_message(text=f"I couldn't find any resume details for the email {email}. Please check if the email is correct.")
+            return []
+        
+        try:
+            # Extract resume details using dictionary keys
+            resume_id = resume_details['ID'] if 'ID' in resume_details else "Not available"
+            predicted_field = resume_details['Predicted_Field'] if 'Predicted_Field' in resume_details else "Not available"
+            
+            # Convert resume_score to float/int if it exists
+            resume_score_str = resume_details.get('resume_score', '0')
+            try:
+                resume_score = float(resume_score_str) if resume_score_str else 0.0
+            except (ValueError, TypeError):
+                resume_score = 0.0
+            
+            
+            score_bar = self.generate_score_bar(resume_score)
+            
+          
+            actual_skills_str = resume_details['Actual_skills'] if 'Actual_skills' in resume_details else "[]"
+            recommended_skills_str = resume_details['Recommended_skills'] if 'Recommended_skills' in resume_details else "[]"
+            
+            # Parse the skills strings into lists
+            try:
+                actual_skills_list = eval(actual_skills_str) if actual_skills_str else []
+                if isinstance(actual_skills_list, list):
+                    actual_skills_formatted = ", ".join(actual_skills_list)
+                else:
+                    actual_skills_formatted = str(actual_skills_list)
+            except:
+                actual_skills_formatted = actual_skills_str
+                
+            try:
+                recommended_skills_list = eval(recommended_skills_str) if recommended_skills_str else []
+                if isinstance(recommended_skills_list, list):
+                    recommended_skills_formatted = ", ".join(recommended_skills_list)
+                else:
+                    recommended_skills_formatted = str(recommended_skills_list)
+            except:
+                recommended_skills_formatted = recommended_skills_str
+            
+            # Handle experiences which is stored as a string representation of JSON
+            experiences_str = resume_details['Experiences'] if 'Experiences' in resume_details else "[]"
+            
+            try:
+                experiences_list = json.loads(experiences_str.replace("'", "\"")) if experiences_str else []
+                experiences_formatted = ""
+                
+                for exp in experiences_list:
+                    title = exp.get('title', 'Unknown Position')
+                    duration = exp.get('duration', 'Unknown Duration')
+                    experiences_formatted += f"- {title} ({duration})\n"
+                
+                if not experiences_formatted:
+                    experiences_formatted = "None"
+            except:
+                experiences_formatted = experiences_str
+            
+           
+            response = f"""Here are your resume parsing details:
+
+📄 ID: {resume_id}
+🎯 Predicted Field: {predicted_field}
+
+**RESUME SCORE**:
+{score_bar} {resume_score}/100
+
+📌 **Actual Skills**: 
+{actual_skills_formatted}
+
+💡 **Recommended Skills**: 
+{recommended_skills_formatted}
+
+🏢 **Experiences**:
+{experiences_formatted}
+"""
+            
+            logger.info(f"Sending response: {response}")
+            dispatcher.utter_message(text=response)
+
+            
+            if resume_score >= 80:
+                dispatcher.utter_message(text="🌟 Your resume looks outstanding! You have a very competitive profile.")
+            elif resume_score >= 60:
+                dispatcher.utter_message(text="💪 Your resume is good! With some minor improvements, it could be even stronger.")
+            else:
+                dispatcher.utter_message(text="📝 Your resume is not good!. Let's work on improving your resume. Focus on the recommended skills to boost your score.")
+
+            if resume_score >= 60:
+                # Check if there are job openings in the candidate's field
+            
+                job_openings = self.check_job_openings_for_field(predicted_field)
+                
+                if job_openings:
+                    # Create a payload that includes the field to filter jobs
+                    field_payload = f"/ask_job_openings{{'field': '{predicted_field}'}}"
+                    
+                    buttons = [
+                        {
+                            "title": f"View {predicted_field} Openings",
+                            "payload": field_payload
+                        }
+                    ]
+                    dispatcher.utter_message(
+                        text=f"Based on your resume score and field ({predicted_field}), we have matching job openings for you:", 
+                        buttons=buttons
+                    )
+                else:
+                    dispatcher.utter_message(
+                        text=f"Based on your resume score, you have a good profile, but we currently don't have openings in {predicted_field}. Would you like to see all available positions?",
+                        buttons=[
+                            {
+                                "title": "View All Job Openings",
+                                "payload": "/ask_job_openings"
+                            }
+                        ]
+                    )
+            
+        except Exception as e:
+            logger.error(f"Error processing resume details: {str(e)}")
+            dispatcher.utter_message(text=f"I encountered an error while processing your resume details: {str(e)}")
+        
+        return []
+    
+    def check_job_openings_for_field(self, field):
+        """
+        Check if there are job openings for the given field
+        
+        Parameters:
+        - field (str): The job field to check
+        
+        Returns:
+        - bool: True if there are openings, False otherwise
+        """
+        try:
+          
+            job_openings = get_job_openings_by_field(field)
+            
+            return bool(job_openings and len(job_openings) > 0)
+        except Exception as e:
+            logger.error(f"Error checking job openings for field {field}: {str(e)}")
+            
+            return False

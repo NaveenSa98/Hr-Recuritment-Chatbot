@@ -46,16 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Define the main options
     const options = [
       {
-        text: "Show job vacancies",
-        icon: "fas fa-list-ul",
-        action: "show_vacancies",
-      },
-      {
-        text: "Check application status",
-        icon: "fas fa-search",
-        action: "check_status",
-      },
-      {
         text: "About company",
         icon: "fas fa-suitcase",
         action: "about_company",
@@ -65,6 +55,22 @@ document.addEventListener("DOMContentLoaded", () => {
         icon: "fas fa-gift",
         action: "employee_benefits",
       },
+      {
+        text: "Resume Parsing Result",
+        icon: "fa fa-address-card",
+        action: "resume_parsing",
+      },
+      {
+        text: "Show job vacancies",
+        icon: "fas fa-list-ul",
+        action: "show_vacancies",
+      },
+      {
+        text: "Check application status",
+        icon: "fas fa-search",
+        action: "check_status",
+      },
+      
       {
         text: "Schedule interview date",
         icon: "fas fa-calendar-alt",
@@ -93,18 +99,22 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Route to correct action
       switch (action) {
+        case "about_company":
+          await sendMessageToRasa("/ask_company_overview")
+          break
+        case "employee_benefits":
+          await sendMessageToRasa("/ask_company_benefits")
+          break
+        case "resume_parsing":
+          await sendMessageToRasa("/ask_resume_parsing_details")
+          break
         case "show_vacancies":
           await sendMessageToRasa("/ask_job_openings")
           break
         case "check_status":
           await sendMessageToRasa("/ask_application_status")
           break
-        case "about_company":
-          await sendMessageToRasa("/ask_company_culture")
-          break
-        case "employee_benefits":
-          await sendMessageToRasa("/ask_benefits")
-          break
+
         case "schedule_interview":
           await sendMessageToRasa("/ask_interview_scheduling")
           break

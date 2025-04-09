@@ -14,8 +14,8 @@ rules:
 
 - rule: List benefits directly
   steps:
-  - intent: ask_benefits
-  - action: utter_benefits
+  - intent: ask_company_benefits
+  - action: utter_company_benefits
 
 - rule: Provide status when ID exists
   condition:

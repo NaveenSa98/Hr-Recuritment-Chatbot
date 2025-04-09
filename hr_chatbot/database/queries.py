@@ -1,44 +1,60 @@
 import os
 import sys
-import psycopg2
-import random
+import pymysql
+import uuid
 from dotenv import load_dotenv
-from psycopg2.extras import RealDictCursor
 from werkzeug.utils import secure_filename
-from datetime import datetime, timedelta, date
-
+from datetime import datetime, date
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
-
 
 load_dotenv()
 
 # database connection
 def connect_to_db():
     """
-    Establish a connection to the PostgreSQL database.
+    Establish a connection to the MySQL database using PyMySQL.
     
     Returns:
-    - psycopg2 connection object or None if connection fails
+    - pymysql connection object or None if connection fails
     """
     try:
-        conn = psycopg2.connect(
-            dbname=os.getenv("DB_NAME"),
+        conn = pymysql.connect(
+            db=os.getenv("DB_NAME"),
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
             host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT")
+            port=int(os.getenv("DB_PORT")),
+            charset='utf8mb4',
+            cursorclass=pymysql.cursors.DictCursor
         )
         return conn
     except Exception as e:
         print(f"Error connecting to database: {e}")
         return None
 
-# Fetch all job openings as a list (new function)
+# For queries that don't need DictCursor
+def connect_to_db_standard():
+    """Connection with standard cursor for simple queries"""
+    try:
+        conn = pymysql.connect(
+            db=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT")),
+            charset='utf8mb4'
+        )
+        return conn
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return None
+
+# Fetch all job openings as a list
 def get_all_jobs_as_list(active_only=True):
     """Fetch all jobs as a list, optionally filtering for active jobs only"""
-    conn = connect_to_db() 
+    conn = connect_to_db_standard() 
     if not conn:
         return []
     
@@ -64,7 +80,7 @@ def get_all_jobs_as_list(active_only=True):
 # Fetch jobs by department
 def get_jobs_by_department(department, active_only=True):
     """Fetch jobs filtered by department and return formatted details for chatbot"""
-    conn = connect_to_db()
+    conn = connect_to_db_standard()
     if not conn:
         return []
     
@@ -117,9 +133,9 @@ def get_job_requirements(title):
     try:
         cursor = conn.cursor()
         query = """
-            SELECT title, requirements,location,description, salary_range,benefits  
+            SELECT title, requirements, location, description, salary_range, benefits  
             FROM jobs 
-            WHERE title ILIKE %s 
+            WHERE title LIKE %s 
             AND status = 'OPEN'
             ORDER BY created_at DESC 
             LIMIT 1
@@ -131,15 +147,8 @@ def get_job_requirements(title):
         if not job:
             return None
             
-        # Return as dictionary with specific fields
-        return {
-            'title': job[0],
-            'requirements': job[1],
-            'location': job[2],
-            'description': job[3],
-            'salary_range': job[4],
-            'benefits': job[5]
-        }
+        # Return the dictionary (PyMySQL DictCursor already returns dictionaries)
+        return job
         
     except Exception as e:
         print(f"Error fetching job details: {e}")
@@ -164,7 +173,6 @@ def save_resume_file(resume_file):
             os.makedirs(upload_dir)
 
         filename = secure_filename(resume_file.filename)
-        # Fix: Use datetime.now() instead of datetime.datetime.now()
         unique_filename = f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
 
         file_path = os.path.join(upload_dir, unique_filename)
@@ -186,13 +194,11 @@ def insert_candidate_info(first_name, last_name, email, phone, position, educati
     
     try:
         cursor = conn.cursor()
-        # Fix: SQL parameters should match the values (7 parameters, not 8)
-        cursor.execute("""INSERT INTO candidates (first_name, last_name, email, phone, position, education, resume_path) 
-                          VALUES (%s, %s, %s, %s, %s, %s, %s)
-                          RETURNING candidate_id
-                       """, (first_name, last_name, email, phone, position, education, resume_path))
+        candidate_id = str(uuid.uuid4())
+        cursor.execute("""INSERT INTO candidates (candidate_id, first_name, last_name, email, phone, position, education, resume_path) 
+                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                       """, (candidate_id, first_name, last_name, email, phone, position, education, resume_path))
         
-        candidate_id = cursor.fetchone()[0]
         conn.commit()
         return candidate_id
     except Exception as e:
@@ -219,19 +225,15 @@ def create_application(candidate_id, job_id):
     try:
         cur = conn.cursor()
         
-      
         cur.execute("""
             INSERT INTO applications (candidate_id, job_id, status, applied_at, last_updated)
-            VALUES (%s, %s, ' under_review', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            RETURNING application_id
+            VALUES (%s, %s, 'under_review', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         """, (candidate_id, job_id))
         
-        result = cur.fetchone()
         conn.commit()
+        application_id = cur.lastrowid
         
-        if result:
-            return result[0] 
-        return None
+        return application_id if application_id else None
         
     except Exception as e:
         if conn:
@@ -259,7 +261,7 @@ def get_job_id_by_title(title):
         """, (title,))
         
         result = cur.fetchone()
-        return result[0] if result else None
+        return result['job_id'] if result else None
     except Exception as e:
         print(f"Error getting job ID: {e}")
         return None
@@ -290,11 +292,11 @@ def get_application_by_id(application_id):
         result = cur.fetchone()
         if result:
             return {
-                "application_id": result[0],
-                "status": result[1],
-                "job_title": result[2],
-                "candidate_name": f"{result[3]} {result[4]}",
-                "email": result[5]
+                "application_id": result['application_id'],
+                "status": result['status'],
+                "job_title": result['title'],
+                "candidate_name": f"{result['first_name']} {result['last_name']}",
+                "email": result['email']
             }
         return None
     except Exception as e:
@@ -327,10 +329,10 @@ def get_application_status(application_id):
         result = cur.fetchone()
         if result:
             return {
-                "status": result[0],
-                "job_title": result[1],
-                "candidate_name": f"{result[2]} {result[3]}",
-                "email": result[4]
+                "status": result['status'],
+                "job_title": result['title'],
+                "candidate_name": f"{result['first_name']} {result['last_name']}",
+                "email": result['email']
             }
         return None
     except Exception as e:
@@ -351,9 +353,8 @@ def get_available_interview_slots(application_id):
         return None
     
     try:
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur = conn.cursor()
         
-
         cur.execute("""
             SELECT job_id FROM applications WHERE application_id = %s
         """, (application_id,))
@@ -374,17 +375,11 @@ def get_available_interview_slots(application_id):
         slots = cur.fetchall()
 
         for slot in slots:
-
-            if isinstance(slot['interview_date'], datetime) or isinstance(slot['interview_date'], date):
+            if isinstance(slot['interview_date'], (datetime, date)):
                 slot['interview_date'] = slot['interview_date'].strftime('%Y-%m-%d')
                 
-
             if hasattr(slot['interview_time'], 'strftime'): 
                 slot['interview_time'] = slot['interview_time'].strftime('%H:%M:%S')
-                
-
-            if hasattr(slot['interview_id'], 'hex'):  
-                slot['interview_id'] = str(slot['interview_id'])
                 
         return slots
     except Exception as e:
@@ -406,7 +401,7 @@ def get_interview_details(interview_id):
         return None
     
     try:
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur = conn.cursor()
         cur.execute("""
             SELECT interview_id, interview_date, interview_time, interview_type, interviewer, status, notes
             FROM interviews
@@ -415,20 +410,13 @@ def get_interview_details(interview_id):
         
         result = cur.fetchone()
         
-    
         if result:
-        
             if 'interview_date' in result:
-                if isinstance(result['interview_date'], datetime) or isinstance(result['interview_date'], date):
+                if isinstance(result['interview_date'], (datetime, date)):
                     result['interview_date'] = result['interview_date'].strftime('%Y-%m-%d')
             
-          
             if 'interview_time' in result and hasattr(result['interview_time'], 'strftime'):
                 result['interview_time'] = result['interview_time'].strftime('%H:%M:%S')
-                
-
-            if 'interview_id' in result and hasattr(result['interview_id'], 'hex'):
-                result['interview_id'] = str(result['interview_id'])
                 
         return result
     except Exception as e:
@@ -438,7 +426,6 @@ def get_interview_details(interview_id):
         if conn:
             cur.close()
             conn.close()
-
 
 
 # Confirm an interview by updating its status
@@ -456,7 +443,6 @@ def confirm_interview(interview_id, application_id):
         
         print(f"Confirming interview: interview_id={interview_id}, application_id={application_id}")
         
-      
         cur.execute("""
             SELECT status FROM interviews WHERE interview_id = %s
         """, (interview_id,))
@@ -466,9 +452,8 @@ def confirm_interview(interview_id, application_id):
             print(f"Interview not found: interview_id={interview_id}")
             return False
             
-        print(f"Current interview status: {interview[0]}")
+        print(f"Current interview status: {interview['status']}")
         
-
         cur.execute("""
             UPDATE interviews
             SET status = 'scheduled'
@@ -481,7 +466,6 @@ def confirm_interview(interview_id, application_id):
         if rows_updated == 0:
             print("No rows updated in interviews table. Interview may already be scheduled.")
             
-  
         cur.execute("""
             UPDATE applications
             SET status = 'interview_scheduled'
@@ -493,7 +477,6 @@ def confirm_interview(interview_id, application_id):
         
         conn.commit()
         
-
         return rows_updated > 0 or app_rows_updated > 0
     except Exception as e:
         conn.rollback()
@@ -514,7 +497,7 @@ def get_scheduled_interview(application_id):
         return None
     
     try:
-        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur = conn.cursor()
         cur.execute("""
             SELECT interview_id, interview_date, interview_time, interview_type, interviewer, status, notes
             FROM interviews
@@ -526,18 +509,12 @@ def get_scheduled_interview(application_id):
         result = cur.fetchone()
         
         if result:
-           
             if 'interview_date' in result:
-                if isinstance(result['interview_date'], datetime) or isinstance(result['interview_date'], date):
+                if isinstance(result['interview_date'], (datetime, date)):
                     result['interview_date'] = result['interview_date'].strftime('%Y-%m-%d')
             
-           
             if 'interview_time' in result and hasattr(result['interview_time'], 'strftime'):
                 result['interview_time'] = result['interview_time'].strftime('%H:%M:%S')
-                
-          
-            if 'interview_id' in result and hasattr(result['interview_id'], 'hex'):
-                result['interview_id'] = str(result['interview_id'])
                 
         return result
     except Exception as e:
@@ -546,4 +523,112 @@ def get_scheduled_interview(application_id):
     finally:
         if conn:
             cur.close()
+            conn.close()
+
+
+def get_resume_details_by_email(email):
+    """
+    Fetch resume parsing details from user_data table by email ID.
+    
+    Parameters:
+    - email (str): The email address of the candidate
+    
+    Returns:
+    - tuple: Resume parsing details containing ID, predicted field, resume score,
+            actual skills, recommended skills, and experiences.
+    - None: If no record found or error occurs
+    """
+    conn = connect_to_db()
+    if not conn:
+        print(f"Database connection failed when looking up email: {email}")
+        return None
+    
+    try:
+        cursor = conn.cursor()
+        
+        # Clean the email input
+        email = email.strip().lower()
+        print(f"Searching for resume details with email: {email}")
+        
+        query = """
+            SELECT ID, Predicted_Field, resume_score, Actual_skills, 
+                   Recommended_skills, Experiences
+            FROM user_data 
+            WHERE LOWER(Email_ID) = %s
+            ORDER BY Timestamp DESC
+            LIMIT 1
+        """
+        
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        
+        if result:
+            print(f"Found resume details for email: {email}")
+            print(f"Result: {result}")
+        else:
+            print(f"No resume details found for email: {email}")
+            
+        return result
+        
+    except Exception as e:
+        print(f"Error fetching resume details for {email}: {e}")
+        return None
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
+
+def get_job_openings_by_field(field):
+    """
+    Get job openings that match a specific field.
+    
+    Parameters:
+    - field (str): The job field to search for
+    
+    Returns:
+    - list: A list of job openings matching the field
+    - None: If no matching jobs found or error occurs
+    """
+    conn = connect_to_db()
+    if not conn:
+        print(f"Database connection failed when looking up jobs for field: {field}")
+        return None
+    
+    try:
+        cursor = conn.cursor()
+        
+       
+        field = field.strip()
+        
+       
+        query = """
+            SELECT id, title, description, requirements, location, salary_range
+            FROM job_openings 
+            WHERE status = 'open' 
+            AND (
+                title LIKE %s 
+                OR category LIKE %s 
+                OR keywords LIKE %s
+            )
+        """
+    
+        search_term = f"%{field}%"
+        cursor.execute(query, (search_term, search_term, search_term))
+        
+        results = cursor.fetchall()
+        
+        if results:
+            print(f"Found {len(results)} job openings for field: {field}")
+        else:
+            print(f"No job openings found for field: {field}")
+            
+        return results
+        
+    except Exception as e:
+        print(f"Error fetching job openings for field {field}: {e}")
+        return None
+    finally:
+        if conn:
+            cursor.close()
             conn.close()

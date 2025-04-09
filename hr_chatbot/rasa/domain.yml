@@ -1,15 +1,19 @@
 version: "3.1"
 
 intents:
-   # Basic conversation
+  # Basic conversation
   - greet
   - goodbye
   - out_of_scope
 
 
 # Company information
+  - ask_company_overview
   - ask_company_culture
-  - ask_benefits
+  - ask_company_values
+  - ask_company_benefits
+  - ask_company_growth_opportunities
+ 
 
 # Application process
   - ask_job_openings
@@ -19,6 +23,8 @@ intents:
   - start_application_form
   - ask_application_status
   - provide_application_id
+  - provide_email_id
+  - ask_resume_parsing_details
   
 
 
@@ -173,13 +179,42 @@ responses:
     - text: "I'm not quite sure I understand. Could you rephrase that or contact our HR team at hr@faite.com or Call 011-xxxx?"
     - text: "I'm having trouble understanding your request. Can you be more specific?"
 
+  utter_company_overview:
+  - text: |
+      At Faite, we're not just building products — we're shaping the future of HR tech. 🚀
+
+      **Who We Are**:
+      - A mission-driven HR and recruitment automation company
+      - Serving 100+ enterprises globally
+      - Headquartered in [City], with remote-first operations
+
+      **What We Do**:
+      - AI-powered recruitment chatbots
+      - Custom Applicant Tracking Systems (ATS)
+      - End-to-end talent acquisition solutions
+
+      **Why We're Different**:
+      - Human-centered tech
+      - 95% customer retention rate
+      - Built by recruiters, for recruiters
+ 
+
   utter_company_culture:
      - text: "At Comapny, we've built a culture that blends innovation with genuine care for our team. Here's what makes us unique:\n\n **Our Core Values**:\n- **Collaboration First**: Cross-functional teamwork is in our DNA\n- **Continuous Learning**: $5,000 annual education stipend\n- **Work-Life Harmony**: Flexible hours and remote options\n- **Transparent Leadership**: Monthly AMA sessions with executives\n\n **Growth Opportunities**:\n- Mentorship programs pairing juniors with VPs\n- Quarterly \"Innovation Days\" to work on passion projects\n- Clear promotion paths with bi-annual reviews\n\n**Recognition**:\n- Peer-nominated awards with cash bonuses\n- Annual company-wide retreat to celebrate wins\n- \"Thank You\" Thursdays for team shoutouts"
-     - text: "Company's culture is best described as 'ambitious yet human' - we drive results while valuing each team member.\n\n**Day-to-Day Environment**:\n- Open office layout with focus pods\n- Casual dress code (be yourself!)\n- Pet-friendly workplaces\n- Monthly team outings (from escape rooms to volunteering)\n\n**Inclusion & Diversity**:\n- 8 Employee Resource Groups (Women in Tech, Pride Alliance, etc.)\n- Unconscious bias training for all hiring managers\n- Multilingual workplace with 14 languages spoken\n\n**Leadership Philosophy**:\n- 'Servant leadership' model\n- 360-degree feedback for all managers\n- Open-door policy at all levels"
+     - text: "At Faite, our culture combines performance with purpose. Here's what it's like working here:\n\n**Our Cultural Values**:\n- Agile teams with weekly sprints and retros\n- Transparency through company-wide AMAs\n- Innovation via monthly hackathons\n\n**Everyday Life**:\n- Remote-first with coworking support\n- Collaborative async communication\n- Regular team bonding events and virtual meetups"
 
-  utter_benefits:
+  utter_company_values:
+  - text: "Our core values guide every decision we make at Faite:\n\n**People First** – Empathy and respect are non-negotiable\n**Bias for Learning** – Mistakes are stepping stones\n**Accountability Wins** – Everyone owns outcomes\n**Speak Up Culture** – Every voice matters\n\nWe reinforce these through values-based hiring, promotions, and recognition programs every quarter."
+
+  
+  utter_company_benefits:
     - text: "Our 'Whole You' benefits package supports every aspect of your life:\n\n💼 **Career Growth**:\n- $/year tuition reimbursement\n- Conference attendance (Domestic + International)\n- Promotion-based stock grants\n\n🏥 **Health & Wellness**:\n- Premium medical/dental/vision (90% company-paid)\n- Mental health coverage (20 therapy sessions/year)\n- Onsite gyms + $500 fitness reimbursement\n- Nutritionist consultations\n\n🏖 **Time Off**:\n- Unlimited PTO (with 15-day minimum usage)\n- 16 weeks parental leave (gender-neutral)\n- 4-week paid sabbatical every 5 years\n\n💰 **Financial**:\n- 401(k) with 6% company match\n- Student loan repayment ($200/month)\n- Financial planning services\n- Performance bonuses (up to 20% of salary)\n\n🍎 **Perks**:\n- Daily catered lunches + snack bars\n- Commuter benefits ($300/month)\n- Company-sponsored vacations (at milestone years)\n- 'Faith Fund' - $2,000/year for personal development"
     - text: "We design our benefits to evolve with your life stages:\n\n**For New Hires**:\n- $5,000 relocation assistance\n- 30-day 'Buddy Program'\n- Signing bonus (role-dependent)\n\n**For Families**:\n- $10,000 fertility/adoption assistance\n- Backup childcare ($100/day credit)\n- College savings plan matching\n\n**For Seasoned Team Members**:\n- Executive coaching\n- Board placement opportunities\n- Angel investing training\n\n**Retirement Transition**:\n- Phased retirement options\n- 401(k) to IRA rollover assistance\n- Alumni network access\n\nAll benefits begin Day 1 - no waiting periods!"
+    - text: " We support your personal, professional, and financial wellbeing from Day 1:\n\n**Career Growth**:\n- $4,000/year education reimbursement\n- Sponsored certifications & conferences\n- Promotion reviews every 6 months\n\n**Health & Wellness**:\n- 90% company-paid health insurance\n- Mental health coverage + wellness stipend\n- Nutritionist & fitness reimbursement\n\n**Time Off**:\n- Unlimited PTO with a 15-day minimum\n- 18 weeks paid parental leave\n- Paid wellness retreat every year\n\n**Financial**:\n- Stock options + performance bonuses\n- Student loan repayment up to $3,000/year\n- Retirement planning sessions"
+
+  utter_company_growth_opportunities:
+    - text: "Growth at Faite is continuous and intentional. Here's how we support your development:\n\n**Career Tracks**:\n- Transparent skill-based growth ladders\n- Promotions based on impact and feedback\n\n**Learning Programs**:\n- Internal L&D platform\n- Sponsored courses and certifications\n- Cross-functional learning rotations\n\n**Mentorship & Leadership**:\n- Monthly mentoring with leadership\n- High-performer leadership tracks\n- Quarterly innovation challenges"
+
 
   utter_recruitment_process:
     - text: "Our recruitment process: 1) Resume review 2) Screening 3) Technical assessment 4) Final interview."
@@ -199,6 +234,10 @@ responses:
   utter_technical_support:
     - text: "We're sorry you're experiencing technical issues. Vist our xxx@com website."
 
+  utter_ask_email_id:
+    - text: "Could you please provide your email ID"
+    - text: "I'll need your email ID to proceed to continue."
+ 
       
 actions:
 # Application process
@@ -207,6 +246,7 @@ actions:
   - action_show_application_form
   - action_check_status
   - action_application_process
+  - action_show_parse_resume
 
 
 # Interview management

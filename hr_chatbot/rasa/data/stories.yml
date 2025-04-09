@@ -2,17 +2,51 @@ version: "3.1"
 
 stories:
 
-# Basic Interaction Flow
-- story: greet and explore company info
+# company information flow
+- story: greet and ask company overview
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: ask_company_culture
-  - action: utter_company_culture
-  - intent: ask_benefits
-  - action: utter_benefits
+  - intent: ask_company_overview
+  - action: utter_company_overview
   - intent: goodbye
   - action: utter_goodbye
+
+- story: ask values and culture
+  steps:
+  - intent: ask_company_values
+  - action: utter_company_values
+  - intent: ask_company_culture
+  - action: utter_company_culture
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: ask benefits and growth
+  steps:
+  - intent: ask_company_benefits
+  - action: utter_company_benefits
+  - intent: ask_company_growth_opportunities
+  - action: utter_company_growth_opportunities
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: full company information flow
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: ask_company_overview
+  - action: utter_company_overview
+  - intent: ask_company_values
+  - action: utter_company_values
+  - intent: ask_company_culture
+  - action: utter_company_culture
+  - intent: ask_company_benefits
+  - action: utter_company_benefits
+  - intent: ask_company_growth_opportunities
+  - action: utter_company_growth_opportunities
+  - intent: goodbye
+  - action: utter_goodbye
+
 
 # Complete Job Application Journey
 - story: full application process
@@ -99,5 +133,15 @@ stories:
   - action: utter_recruitment_process
   - intent: ask_how_to_apply
   - action: utter_how_to_apply
+  - intent: goodbye
+  - action: utter_goodbye
+
+# Get resume parsing details  
+- story: resume parsing
+  steps:
+  - intent: ask_resume_parsing_details
+  - action: utter_ask_email_id
+  - intent: provide_email_id
+  - action: action_show_parse_resume
   - intent: goodbye
   - action: utter_goodbye

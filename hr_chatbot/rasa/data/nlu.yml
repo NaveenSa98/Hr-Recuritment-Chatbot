@@ -27,25 +27,57 @@ nlu:
     - Goodnight, chatbot
     - Thanks
 
+- intent: ask_company_overview
+  examples: |
+    - Can you give me an overview of Faite?
+    - Tell me about Faite as a company
+    - What does Faite do?
+    - I want to know about your company
+    - What industry is Faite in?
+    - What's Faite known for?
+    - Give me a brief intro about the company
+    - What is Faite's mission and vision?
+
 - intent: ask_company_culture
   examples: |
     - What's the company culture like?
     - Tell me about your work environment
-    - How would you describe the culture?
+    - How would you describe the culture at Faite?
     - What's it like to work there?
-    - Describe the company values
-    - What are your core values?
-    - What's the work culture at Faite?
+    - How is the team dynamic at Faite?
+    - What is your approach to employee collaboration?
+    - Describe your office vibe
+    - Is the work environment more relaxed or structured?
 
-- intent: ask_benefits
+- intent: ask_company_values
   examples: |
-    - What benefits do you offer?
-    - Tell me about your benefits package
-    - What perks come with this job?
-    - Do you provide health insurance?
-    - What's included in your benefits?
-    - What employee benefits are available?
-    - What's your benefits policy?
+    - What are your core values?
+    - What does Faite stand for?
+    - Tell me about the values your company follows
+    - What principles guide your team?
+    - What ethical standards does Faite follow?
+    - Can you share Faite's guiding beliefs?
+
+- intent: ask_company_benefits
+  examples: |
+    - What benefits do you offer employees?
+    - Do you provide health insurance and PTO?
+    - What's in your employee benefits package?
+    - Are there any bonuses or perks?
+    - What is the wellness support policy?
+    - Do you offer relocation support?
+    - What are the financial benefits at Faite?
+    - Any learning and development opportunities?
+
+- intent: ask_company_growth_opportunities
+  examples: |
+    - Are there growth opportunities at Faite?
+    - How do you support career advancement?
+    - Do you offer training or certifications?
+    - Is there a clear career path in the company?
+    - What does employee development look like?
+    - How does Faite help employees grow professionally?
+    - Can I switch roles internally in the future?
 
 - intent: ask_job_openings
   examples: |
@@ -162,3 +194,40 @@ nlu:
     - Can you sing?
     - What time is it?
     - Where do you live?
+
+- intent: ask_resume_parsing_details
+  examples: |
+    - Can you show me my resume parsing details?
+    - I want to see the parsed resume data
+    - Show parsed resume information
+    - Give me resume parsing summary
+    - What does my resume analysis look like?
+    - Analyze and display my resume details
+    - Show resume parsing output
+    - Resume parsing details please
+    - What are the extracted details from my resume?
+    - Parse my resume and show the info
+    - I need resume parsing insights
+    - Resume parsing results
+    - Show me how my CV was parsed
+    - I would like to view the resume parsing report
+    - Can you analyze my CV and show the parsed fields?
+
+
+- intent: provide_email_id
+  examples: |
+    - My email id is [xxxxx@gmail.com](email)
+    - Email id is [xxxxx@gmail.com](email)
+    - Here is my email id [mike_dev@outlook.com](email)
+    - The email id is [sara.proton@protonmail.com](email)
+    - You can reach me at [daniel88@hotmail.com](email)
+    - Contact me via [emma.writer@icloud.com](email)
+    - My official email is [jake.hr@company.com](email)
+    - Use [support_team@gmx.com](email) to contact me
+    - I prefer using [admin.zohomail@zohomail.com](email)
+    - Here is my email address [alex.smith@mail.com](email)
+    - [paul_frost@yandex.com](email) is my email
+
+   
+
+  
