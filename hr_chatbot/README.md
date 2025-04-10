@@ -37,9 +37,9 @@ The HR Recruitment Chatbot is an intelligent assistant designed to streamline th
 
 ## Technologies Used
 
-- **Backend**: Python (Flask)
+- **Backend**: Python version 3.10.0 (Flask)
 - **Frontend**: HTML, CSS, JavaScript
-- **Database**: SQLite
+- **Database**: MySQL
 - **AI/ML**: Natural Language Toolkit (NLTK), spaCy
 
 ## Contributing
